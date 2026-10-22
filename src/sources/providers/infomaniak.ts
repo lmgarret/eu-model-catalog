@@ -1,3 +1,4 @@
+import { Decimal } from "decimal.js";
 import { z } from "zod";
 import { type Currency, HardError, type Mode, type ModelRecord, type Unit } from "../../model.js";
 import { type ProviderApi, checkCurrency, positiveInt, priceOf } from "./types.js";
@@ -36,12 +37,18 @@ function modeOf(type: string): Mode | undefined {
   return undefined;
 }
 
-function unitOf(type: string, amount: number): Unit {
-  if (type === "tokens" && amount === 1_000_000) return "1M_tokens";
-  if (type === "tokens" && amount === 1_000) return "1K_tokens";
-  if (type === "tokens" && amount === 1) return "token";
-  if (type === "minute" && amount === 1) return "minute";
-  throw new Error(`unsupported Infomaniak price unit: ${amount} ${type}`);
+/**
+ * Prices are quoted per N tokens or per N minutes, with N varying by model (e.g. 10000 tokens).
+ * Rescale to per 1M tokens or per minute, with exact decimal math.
+ */
+function normalizeUnit(type: string, per: number): { unit: Unit; scale: (amount: number | null | undefined) => string | undefined } {
+  const rescale = (factor: Decimal) => (amount: number | null | undefined) => {
+    const value = priceOf(amount);
+    return value === undefined ? undefined : new Decimal(value).mul(factor).toString();
+  };
+  if (type === "tokens") return { unit: "1M_tokens", scale: rescale(new Decimal(1_000_000).div(per)) };
+  if (type === "minute") return { unit: "minute", scale: rescale(new Decimal(1).div(per)) };
+  throw new Error(`unsupported Infomaniak price unit: ${per} ${type}`);
 }
 
 /**
@@ -59,6 +66,7 @@ export const infomaniak: ProviderApi = {
       const price = m.prices?.[0];
       let currency: Currency = config.currency ?? "CHF";
       let unit: Unit = "1M_tokens";
+      let prices: ModelRecord["prices"] = {};
       if (price) {
         const mapped = config.currency_ids?.[String(price.currency_id)];
         if (!mapped) {
@@ -68,7 +76,12 @@ export const infomaniak: ProviderApi = {
         }
         checkCurrency("infomaniak", mapped, config);
         currency = mapped;
-        unit = unitOf(price.unit.type, price.unit.amount);
+        const normalized = normalizeUnit(price.unit.type, price.unit.amount);
+        unit = normalized.unit;
+        prices = {
+          input: normalized.scale(price.input_amount_excl_vat ?? price.amount_excl_vat),
+          output: normalized.scale(price.output_amount_excl_vat),
+        };
       }
       records.push({
         provider: "infomaniak",
@@ -76,12 +89,7 @@ export const infomaniak: ProviderApi = {
         source: "api",
         currency,
         unit,
-        prices: price
-          ? {
-              input: priceOf(price.input_amount_excl_vat ?? price.amount_excl_vat),
-              output: priceOf(price.output_amount_excl_vat),
-            }
-          : {},
+        prices,
         limits: { max_input_tokens: positiveInt(m.max_token_input) },
         mode: modeOf(m.type),
         source_url: "https://api.infomaniak.com/1/ai/models",

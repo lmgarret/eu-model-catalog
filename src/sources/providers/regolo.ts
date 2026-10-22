@@ -51,6 +51,7 @@ export const regolo: ProviderApi = {
           max_output_tokens: positiveInt(m.max_output_tokens),
         },
         mode: m.mode ? MODE_BY_MODE[m.mode] : undefined,
+        input_only: m.mode === "decision",
         source_url: regolo.url,
         fetched_at: fetchedAt,
       };

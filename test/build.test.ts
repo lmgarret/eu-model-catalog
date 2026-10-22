@@ -74,11 +74,30 @@ describe("buildOutputs", () => {
     expect(catalog.exchange_rates).toMatchObject({ date: "2026-10-21", rates: { USD: "1.1234", CHF: "0.9256" } });
   });
 
-  it("warns about zero or missing prices", async () => {
+  it("warns once per model and price when no source has it", async () => {
     const { warnings } = await build();
-    expect(warnings).toContainEqual(
-      expect.objectContaining({ code: "missing_price", provider: "regolo", model: "faster-whisper-large-v3" }),
+    const missing = warnings.filter((w) => w.code === "missing_price");
+    expect(missing).toContainEqual(
+      expect.objectContaining({
+        provider: "regolo",
+        model: "brick-v1-beta",
+        details: { price: "input", sources: ["models.dev", "api"] },
+      }),
     );
+    expect(missing.filter((w) => w.model === "brick-v1-beta")).toHaveLength(2);
+  });
+
+  it("does not warn when another source fills the price, even in another unit", async () => {
+    const { warnings } = await build();
+    const models = warnings.filter((w) => w.code === "missing_price").map((w) => w.model);
+    // The overlay prices faster-whisper; the API prices green-s per hour where models.dev has nothing.
+    expect(models).not.toContain("faster-whisper-large-v3");
+    expect(models).not.toContain("green-s");
+  });
+
+  it("does not expect an output price from decision models", async () => {
+    const { warnings } = await build();
+    expect(warnings.filter((w) => w.model === "metis")).toEqual([]);
   });
 
   it("warns when the overlay disagrees, showing both values", async () => {

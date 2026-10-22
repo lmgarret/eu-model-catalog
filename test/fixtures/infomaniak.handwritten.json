@@ -1,5 +1,5 @@
 {
-  "_fixture": "HAND-WRITTEN from Infomaniak's OpenAPI spec (GET /1/ai/models, AiModel + AIPrice schemas) and the prices on https://www.infomaniak.com/en/hosting/ai-tools/prices. Replace with a captured response once INFOMANIAK_TOKEN is available.",
+  "_fixture": "HAND-WRITTEN from Infomaniak's OpenAPI spec (GET /1/ai/models, AiModel + AIPrice schemas) and the prices on https://www.infomaniak.com/en/hosting/ai-tools/prices. Apertus is priced per 10000 tokens, as the real API does for some models. Replace with a captured response once INFOMANIAK_TOKEN is available.",
   "result": "success",
   "data": [
     {
@@ -13,15 +13,21 @@
       "last_updated_at": "2026-10-01T00:00:00+00:00",
       "max_token_input": 100000,
       "version": null,
-      "meta": { "is_beta": false, "is_coder": false },
+      "meta": {
+        "is_beta": false,
+        "is_coder": false
+      },
       "prices": [
         {
           "label": "Default",
           "model": "swiss-ai/Apertus-v1.5-70B",
-          "input_amount_excl_vat": 0.7,
-          "output_amount_excl_vat": 2.5,
+          "input_amount_excl_vat": 0.007,
+          "output_amount_excl_vat": 0.025,
           "currency_id": 1,
-          "unit": { "type": "tokens", "amount": 1000000 }
+          "unit": {
+            "type": "tokens",
+            "amount": 10000
+          }
         }
       ]
     },
@@ -36,7 +42,10 @@
       "last_updated_at": "2026-10-01T00:00:00+00:00",
       "max_token_input": 256000,
       "version": null,
-      "meta": { "is_beta": false, "is_coder": false },
+      "meta": {
+        "is_beta": false,
+        "is_coder": false
+      },
       "prices": [
         {
           "label": "Default",
@@ -44,7 +53,10 @@
           "input_amount_excl_vat": 0.2,
           "output_amount_excl_vat": 0.75,
           "currency_id": 1,
-          "unit": { "type": "tokens", "amount": 1000000 }
+          "unit": {
+            "type": "tokens",
+            "amount": 1000000
+          }
         }
       ]
     },
@@ -59,14 +71,20 @@
       "last_updated_at": "2026-10-01T00:00:00+00:00",
       "max_token_input": null,
       "version": null,
-      "meta": { "is_beta": false, "is_coder": false },
+      "meta": {
+        "is_beta": false,
+        "is_coder": false
+      },
       "prices": [
         {
           "label": "Default",
           "model": "whisper",
           "amount_excl_vat": 0.006,
           "currency_id": 1,
-          "unit": { "type": "minute", "amount": 1 }
+          "unit": {
+            "type": "minute",
+            "amount": 1
+          }
         }
       ]
     }

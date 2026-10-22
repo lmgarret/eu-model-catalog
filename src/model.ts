@@ -44,6 +44,8 @@ export const modelRecordSchema = z.object({
     max_output_tokens: z.number().int().positive().optional(),
   }),
   mode: z.enum(MODES).optional(),
+  /** Billed on input only (e.g. decision models), so a missing output price is expected. */
+  input_only: z.boolean().optional(),
   deprecation_date: isoDate.optional(),
   source_url: z.string().optional(),
   /** ISO timestamp for fetched sources, the `checked` date for the overlay. */

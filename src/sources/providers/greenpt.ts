@@ -52,6 +52,7 @@ export const greenpt: ProviderApi = {
           max_output_tokens: positiveInt(m.maxOutputTokens),
         },
         mode,
+        input_only: m.type === "DECISION",
         source_url: greenpt.url,
         fetched_at: fetchedAt,
       };
