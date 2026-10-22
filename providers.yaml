@@ -1,0 +1,30 @@
+# Provider ids per source.
+#
+# bifrost_provider: the provider name as configured in our Bifrost. Bifrost looks prices up by
+#   model + the entry's `provider` field + mode, and custom providers are looked up under their
+#   own name (never their base provider type). These must match our Bifrost config exactly,
+#   including case: Bifrost compares provider names case-sensitively.
+# models_dev_id: the provider id on https://models.dev/api.json.
+# currency: pinned invoice currency. A provider API returning another currency fails the build.
+
+greenpt:
+  bifrost_provider: GreenPT
+  models_dev_id: greenpt
+  currency: EUR
+
+regolo:
+  bifrost_provider: Regolo.ai
+  models_dev_id: regolo-ai
+  currency: EUR
+
+infomaniak:
+  bifrost_provider: Infomaniak
+  models_dev_id: infomaniak
+  # The API returns a numeric currency_id. Id 1 = CHF comes from the example in Infomaniak's
+  # OpenAPI spec (Currency schema); confirm against a real response. Unknown ids fail the build.
+  currency_ids:
+    "1": CHF
+
+mistral:
+  bifrost_provider: mistral
+  models_dev_id: mistral

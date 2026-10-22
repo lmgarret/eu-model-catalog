@@ -1,0 +1,63 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "gemma4",
+      "object": "pricing",
+      "ownedBy": "google",
+      "type": "LLM",
+      "contextWindowTokens": 256000,
+      "maxOutputTokens": 32000,
+      "pricing": {
+        "promptToken": 0.5,
+        "completionToken": 1.5
+      }
+    },
+    {
+      "id": "green-embedding",
+      "object": "pricing",
+      "ownedBy": "greenpt",
+      "type": "EMBEDDINGS",
+      "contextWindowTokens": 32000,
+      "maxOutputTokens": null,
+      "pricing": {
+        "promptToken": 0.2
+      }
+    },
+    {
+      "id": "green-l",
+      "object": "pricing",
+      "ownedBy": "greenpt",
+      "type": "LLM",
+      "contextWindowTokens": 128000,
+      "maxOutputTokens": 32000,
+      "pricing": {
+        "promptToken": 0.25,
+        "completionToken": 0.8
+      }
+    },
+    {
+      "id": "green-s",
+      "object": "pricing",
+      "ownedBy": "greenpt",
+      "type": "STT",
+      "contextWindowTokens": null,
+      "maxOutputTokens": null,
+      "pricing": {
+        "listenSecond": 0.23,
+        "liveSecond": 0.31
+      }
+    },
+    {
+      "id": "metis",
+      "object": "pricing",
+      "ownedBy": "greenpt",
+      "type": "DECISION",
+      "contextWindowTokens": 32768,
+      "maxOutputTokens": null,
+      "pricing": {
+        "promptToken": 0.12
+      }
+    }
+  ]
+}

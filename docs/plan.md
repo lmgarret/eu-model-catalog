@@ -44,7 +44,7 @@ One file per provider, with prices written exactly as the provider publishes the
 # overlay/greenpt.yaml
 green-l:
   currency: EUR          # EUR | CHF | USD
-  per: 1M_tokens         # 1M_tokens | token | page | second | character
+  per: 1M_tokens         # 1M_tokens | 1K_tokens | token | page | second | minute | hour | character
   input: 0.25
   cached_input: 0.05
   output: 0.80
@@ -167,8 +167,33 @@ SvelteKit with `adapter-static`, base path `/eu-model-catalog`. It reads `catalo
 
 ## Open questions to resolve during phase 1
 
+Answers found during phase 1 are marked **Answer**. They are based on Bifrost's source (`framework/modelcatalog/datasheet/`).
+
 - **How Bifrost looks up prices for custom providers:** by the provider name configured in Bifrost, or by the base provider type? This decides the `bifrost_provider` keys. Check `framework/modelcatalog` in https://github.com/maximhq/bifrost.
+  - **Answer:** by the custom provider's own name. There is no fallback to the base provider type, and none to the model alone.
+  - Each datasheet row is stored as `model|provider|mode`:
+    - the model is the map key with everything up to the first `/` removed
+    - the provider comes from the entry's `provider` field; the key's prefix is ignored
+    - the mode comes from `mode`
+  - A request matches on the exact model, then on the lowercased model. So every entry needs the right `provider` and `mode`, and `bifrost_provider` must equal the custom provider's name.
+  - `normalizeProvider` matches by substring: a custom name containing `together`, `bedrock`, `cohere`, `runwayml`, `fireworks_ai` or `vertex_ai` is rewritten to the built-in name. Avoid those names.
 - **Whether Bifrost uses the non-token fields** (`ocr_cost_per_page`, `input_cost_per_second`, `input_cost_per_character`) to cost OCR, transcription and TTS requests.
+  - **Answer:** yes.
+    - **OCR:** pages × `ocr_cost_per_page`, plus `annotation_cost_per_page` for annotated requests.
+    - **Transcription:** audio or prompt tokens when the provider reports them. Otherwise `usage.seconds` × `input_cost_per_audio_per_second`, falling back to `input_cost_per_second`.
+    - **TTS:** characters × `input_cost_per_character`. Without that field, Bifrost multiplies the characters by the input token rate.
+  - Other notes:
+    - `cache_read_input_token_cost` and `input_cost_per_token_batches` are used.
+    - `deprecation_date` is ignored; Bifrost only reads the boolean `is_deprecated`, so the build sets both.
+    - With a database config store, a sync upserts rows and never deletes them. Without one, the in-memory catalog is replaced.
+    - `pricing_sync_interval` is in seconds, with a minimum of 3600.
 - **Infomaniak's `/1/ai/models` response shape**, and whether it needs a product id.
+  - **Answer, from Infomaniak's OpenAPI spec:** no product id is needed.
+  - Prices are only included with `?with=pricing`, as `prices[]` of `{input_amount_excl_vat, output_amount_excl_vat, amount_excl_vat, currency_id, unit: {type: "tokens" | "minute", amount: N}}`.
+  - The currency is a numeric `currency_id`. `providers.yaml` maps id 1 to CHF, taken from the spec's example. An unknown id fails the build.
+  - Still to do: capture a real response to confirm the shape.
 - **GreenPT's pricing unit:** confirm it's per 1M tokens and in EUR.
+  - **Answer:** confirmed by https://docs.greenpt.ai/docs/pricing: EUR, per 1M tokens, for the EU endpoint `api.greenpt.ai`.
+  - The speech-to-text fields `listenSecond` / `liveSecond` are in fact **per hour** (green-s costs €0.23 per hour of pre-recorded audio). The build uses the pre-recorded rate.
 - **The OCR, transcription and TTS models served by bifrost-adapters:** which models, under which Bifrost provider names, at which rates. Ask the repo owner.
+  - Still open. Add them to the overlay once known.
