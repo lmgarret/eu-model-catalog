@@ -1,0 +1,10 @@
+# Hand-kept Infomaniak prices. Overrides every other source, field by field.
+# See overlay/greenpt.yaml for the entry format.
+
+swiss-ai/Apertus-v1.5-70B:
+  currency: CHF
+  per: 1M_tokens
+  input: 0.70
+  output: 2.50
+  source: https://www.infomaniak.com/en/hosting/ai-tools/prices
+  checked: 2026-10-22

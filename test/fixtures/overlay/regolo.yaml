@@ -1,0 +1,11 @@
+# Hand-kept Regolo prices. Overrides every other source, field by field.
+# See overlay/greenpt.yaml for the entry format.
+
+# The API reports 0 for this model; the pricing page bills per second of audio.
+faster-whisper-large-v3:
+  currency: EUR
+  per: second
+  input: 0.00015
+  mode: audio_transcription
+  source: https://regolo.ai/pricing
+  checked: 2026-10-22

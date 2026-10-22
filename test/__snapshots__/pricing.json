@@ -1,0 +1,213 @@
+{
+  "gpt-4o-transcribe-diarize": {
+    "input_cost_per_audio_token": 0.0000025,
+    "input_cost_per_token": 0.0000025,
+    "max_input_tokens": 16000,
+    "max_output_tokens": 2000,
+    "mode": "audio_transcription",
+    "output_cost_per_token": 0.00001,
+    "supported_endpoints": [
+      "/v1/audio/transcriptions"
+    ],
+    "deprecation_date": "2027-02-26",
+    "input_cost_per_second": 0.0001,
+    "source": "https://developers.openai.com/api/docs/pricing",
+    "provider": "openai",
+    "base_model": "gpt-4o-transcribe",
+    "web_search_cost_per_request": 0.01,
+    "web_search_billing_unit": "per_request"
+  },
+  "ai21.j2-mid-v1": {
+    "input_cost_per_token": 0.0000125,
+    "max_input_tokens": 8191,
+    "max_output_tokens": 8191,
+    "max_tokens": 8191,
+    "mode": "chat",
+    "output_cost_per_token": 0.0000125,
+    "source": "https://aws.amazon.com/bedrock/pricing/",
+    "provider": "bedrock",
+    "base_model": "j2-mid-v1"
+  },
+  "greenpt/gemma4": {
+    "provider": "greenpt",
+    "base_model": "gemma4",
+    "mode": "chat",
+    "input_cost_per_token": 5.617e-7,
+    "output_cost_per_token": 0.0000016851,
+    "max_input_tokens": 256000,
+    "max_output_tokens": 32000,
+    "source": "https://api.greenpt.ai/v1/pricing"
+  },
+  "greenpt/green-embedding": {
+    "provider": "greenpt",
+    "base_model": "green-embedding",
+    "mode": "embedding",
+    "input_cost_per_token": 2.2468e-7,
+    "max_input_tokens": 32000,
+    "source": "https://api.greenpt.ai/v1/pricing"
+  },
+  "greenpt/green-l": {
+    "provider": "greenpt",
+    "base_model": "green-l",
+    "mode": "chat",
+    "input_cost_per_token": 2.8085e-7,
+    "output_cost_per_token": 8.9872e-7,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "source": "https://api.greenpt.ai/v1/pricing"
+  },
+  "greenpt/green-s": {
+    "provider": "greenpt",
+    "base_model": "green-s",
+    "mode": "audio_transcription",
+    "input_cost_per_second": 0.0000717727777778,
+    "max_output_tokens": 8192,
+    "source": "https://docs.greenpt.ai/docs/pricing"
+  },
+  "greenpt/metis": {
+    "provider": "greenpt",
+    "base_model": "metis",
+    "mode": "chat",
+    "input_cost_per_token": 1.34808e-7,
+    "max_input_tokens": 32768,
+    "source": "https://api.greenpt.ai/v1/pricing"
+  },
+  "regolo/apertus-70b": {
+    "provider": "regolo",
+    "base_model": "apertus-70b",
+    "mode": "chat",
+    "input_cost_per_token": 4.4936e-7,
+    "output_cost_per_token": 0.00000235914,
+    "max_input_tokens": 30000,
+    "max_output_tokens": 30000,
+    "source": "https://api.regolo.ai/model_group/info"
+  },
+  "regolo/faster-whisper-large-v3": {
+    "provider": "regolo",
+    "base_model": "faster-whisper-large-v3",
+    "mode": "audio_transcription",
+    "input_cost_per_second": 0.00016851,
+    "max_input_tokens": 448,
+    "max_output_tokens": 4096,
+    "source": "https://regolo.ai/pricing"
+  },
+  "infomaniak/mistralai/Mistral-Small-4-119B-2603": {
+    "provider": "infomaniak",
+    "base_model": "mistralai/Mistral-Small-4-119B-2603",
+    "mode": "chat",
+    "input_cost_per_token": 2.42739844425e-7,
+    "output_cost_per_token": 9.10274416595e-7,
+    "max_input_tokens": 256000,
+    "source": "https://api.infomaniak.com/1/ai/models"
+  },
+  "infomaniak/swiss-ai/Apertus-v1.5-70B": {
+    "provider": "infomaniak",
+    "base_model": "swiss-ai/Apertus-v1.5-70B",
+    "mode": "chat",
+    "input_cost_per_token": 8.49589455488e-7,
+    "output_cost_per_token": 0.00000303424805532,
+    "max_input_tokens": 100000,
+    "max_output_tokens": 8192,
+    "source": "https://www.infomaniak.com/en/hosting/ai-tools/prices"
+  },
+  "infomaniak/whisper": {
+    "provider": "infomaniak",
+    "base_model": "whisper",
+    "mode": "audio_transcription",
+    "input_cost_per_second": 0.000121369922213,
+    "source": "https://api.infomaniak.com/1/ai/models"
+  },
+  "mistral/mistral-embed": {
+    "provider": "mistral",
+    "base_model": "mistral-embed",
+    "mode": "embedding",
+    "input_cost_per_token": 1e-7,
+    "max_input_tokens": 8000,
+    "max_output_tokens": 3072,
+    "source": "https://models.dev/?search=mistral"
+  },
+  "mistral/mistral-large-2411": {
+    "provider": "mistral",
+    "base_model": "mistral-large-2411",
+    "mode": "chat",
+    "input_cost_per_token": 0.000002,
+    "output_cost_per_token": 0.000006,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 16384,
+    "deprecation_date": "2026-11-30",
+    "is_deprecated": false,
+    "source": "https://models.dev/?search=mistral"
+  },
+  "mistral/mistral-ocr-latest": {
+    "ocr_cost_per_page": 0.004,
+    "ocr_cost_per_page_batches": 0.002,
+    "annotation_cost_per_page": 0.005,
+    "annotation_cost_per_page_batches": 0.0025,
+    "mode": "ocr",
+    "supported_endpoints": [
+      "/v1/ocr",
+      "/v1/batch"
+    ],
+    "source": "https://mistral.ai/pricing#api-pricing",
+    "provider": "mistral",
+    "base_model": "mistral-ocr",
+    "input_cost_per_token": 0.004
+  },
+  "mistral/mistral-small-latest": {
+    "cache_read_input_token_cost": 1.5e-8,
+    "input_cost_per_token": 1.5e-7,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 256000,
+    "max_tokens": 262144,
+    "mode": "chat",
+    "output_cost_per_token": 6e-7,
+    "reasoning_effort_levels": [
+      "none",
+      "high"
+    ],
+    "source": "https://models.dev/?search=mistral",
+    "supports_assistant_prefill": true,
+    "supports_function_calling": true,
+    "supports_reasoning": true,
+    "supports_response_schema": true,
+    "supports_tool_choice": true,
+    "supports_vision": true,
+    "provider": "mistral",
+    "base_model": "mistral-small"
+  },
+  "mistral/voxtral-mini-latest": {
+    "input_cost_per_second": 0.00005,
+    "mode": "audio_transcription",
+    "source": "https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-26-02",
+    "supported_endpoints": [
+      "/v1/audio/transcriptions"
+    ],
+    "supported_modalities": [
+      "audio"
+    ],
+    "supported_output_modalities": [
+      "text"
+    ],
+    "supports_audio_input": true,
+    "provider": "mistral",
+    "base_model": "voxtral-mini",
+    "max_input_tokens": 32768
+  },
+  "mistral/voxtral-mini-tts-latest": {
+    "input_cost_per_character": 0.000016,
+    "mode": "audio_speech",
+    "source": "https://docs.mistral.ai/models/model-cards/voxtral-tts-26-03",
+    "supported_endpoints": [
+      "/v1/audio/speech"
+    ],
+    "supported_modalities": [
+      "text"
+    ],
+    "supported_output_modalities": [
+      "audio"
+    ],
+    "supports_audio_output": true,
+    "provider": "mistral",
+    "base_model": "voxtral-mini-tts"
+  }
+}

@@ -1,0 +1,502 @@
+{
+  "greenpt": {
+    "id": "greenpt",
+    "env": [
+      "GREENPT_API_KEY"
+    ],
+    "npm": "@ai-sdk/openai-compatible",
+    "api": "https://api.greenpt.ai/v1",
+    "name": "GreenPT",
+    "doc": "https://docs.greenpt.ai",
+    "models": {
+      "green-l": {
+        "id": "green-l",
+        "name": "Green L",
+        "description": "Efficient Mistral model for fast chat, extraction, and production assistants",
+        "family": "mistral-small",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-03",
+        "release_date": "2025-06-20",
+        "last_updated": "2025-06-20",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 128000,
+          "output": 32768
+        },
+        "cost": {
+          "input": 0.285,
+          "output": 0.912
+        },
+        "canonical_model_id": "mistral/mistral-small-2506"
+      },
+      "green-s": {
+        "id": "green-s",
+        "type": "transcription",
+        "name": "Green S",
+        "description": "GreenPT speech-to-text model for pre-recorded and live transcription",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": false,
+        "release_date": "2025-01",
+        "last_updated": "2025-01",
+        "modalities": {
+          "input": [
+            "audio"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "limit": {
+          "context": 0,
+          "output": 8192
+        },
+        "provider": {
+          "api": "https://api.greenpt.ai"
+        }
+      },
+      "gemma4": {
+        "id": "gemma4",
+        "name": "gemma4",
+        "description": "Open Gemma instruction model for efficient chat and self-hosted deployments",
+        "family": "gemma",
+        "attachment": true,
+        "reasoning": true,
+        "reasoning_options": [
+          {
+            "type": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2026-04-02",
+        "last_updated": "2026-04-02",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 262144,
+          "output": 32768
+        },
+        "cost": {
+          "input": 0.57,
+          "output": 1.71
+        },
+        "canonical_model_id": "google/gemma-4-26b-a4b-it"
+      }
+    }
+  },
+  "regolo-ai": {
+    "id": "regolo-ai",
+    "env": [
+      "REGOLO_API_KEY"
+    ],
+    "npm": "@ai-sdk/openai-compatible",
+    "api": "https://api.regolo.ai/v1",
+    "name": "Regolo AI",
+    "doc": "https://docs.regolo.ai/",
+    "models": {
+      "apertus-70b": {
+        "id": "apertus-70b",
+        "name": "Apertus 70B",
+        "description": "Fully open 70B multilingual LLM supporting 1800+ languages with 65K context. Trained on 15T tokens of compliant open data. Apache 2.0, EU AI Act compliant.",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-09",
+        "release_date": "2025-09-02",
+        "last_updated": "2025-09-02",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 30000,
+          "output": 30000
+        },
+        "cost": {
+          "input": 0.46,
+          "output": 2.42
+        },
+        "canonical_model_id": "swiss-ai/apertus-70b"
+      },
+      "faster-whisper-large-v3": {
+        "id": "faster-whisper-large-v3",
+        "type": "transcription",
+        "name": "Faster Whisper Large v3",
+        "description": "Open Whisper checkpoint for robust multilingual transcription and captioning",
+        "family": "whisper",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "release_date": "2023-11-06",
+        "last_updated": "2023-11-06",
+        "modalities": {
+          "input": [
+            "audio"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 448,
+          "output": 4096
+        },
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "canonical_model_id": "openai/whisper-large-v3"
+      },
+      "brick-v1-beta": {
+        "id": "brick-v1-beta",
+        "name": "Brick v1 Beta",
+        "description": "Semantic router by Regolo.ai that directs each request to the most suitable model, optimizing costs and performance",
+        "family": "model-router",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2026-02-06",
+        "last_updated": "2026-02-06",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "limit": {
+          "context": 100000,
+          "output": 15000
+        },
+        "status": "beta",
+        "cost": {
+          "input": 0,
+          "output": 0
+        }
+      }
+    }
+  },
+  "infomaniak": {
+    "id": "infomaniak",
+    "env": [
+      "INFOMANIAK_API_KEY",
+      "INFOMANIAK_PRODUCT_ID"
+    ],
+    "npm": "@ai-sdk/openai-compatible",
+    "api": "https://api.infomaniak.com/2/ai/${INFOMANIAK_PRODUCT_ID}/openai/v1",
+    "name": "Infomaniak",
+    "doc": "https://www.infomaniak.com/en/hosting/ai-services/open-source-models",
+    "models": {
+      "swiss-ai/Apertus-v1.5-70B": {
+        "id": "swiss-ai/Apertus-v1.5-70B",
+        "name": "Apertus v1.5 70B",
+        "description": "Open, ethically-sourced Swiss AI model for multilingual, multimodal chat and instruction following",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2026-07-24",
+        "last_updated": "2026-08-01",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "audio"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 100000,
+          "input": 100000,
+          "output": 8192
+        },
+        "status": "beta",
+        "cost": {
+          "input": 0.87,
+          "output": 3.1
+        }
+      },
+      "mini_lm_l12_v2": {
+        "id": "mini_lm_l12_v2",
+        "type": "embedding",
+        "name": "All-MiniLM-L12-v2",
+        "description": "Embedding model for semantic search, retrieval, clustering, and ranking pipelines",
+        "family": "text-embedding",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": false,
+        "release_date": "2021-08-30",
+        "last_updated": "2021-08-30",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 128,
+          "input": 128,
+          "output": 384
+        },
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "canonical_model_id": "sentence-transformers/all-minilm-l12-v2"
+      }
+    }
+  },
+  "mistral": {
+    "id": "mistral",
+    "env": [
+      "MISTRAL_API_KEY"
+    ],
+    "npm": "@ai-sdk/mistral",
+    "name": "Mistral",
+    "doc": "https://docs.mistral.ai/getting-started/models/",
+    "models": {
+      "mistral-small-latest": {
+        "id": "mistral-small-latest",
+        "name": "Mistral Small (latest)",
+        "description": "Efficient Mistral model for fast chat, extraction, and production assistants",
+        "family": "mistral-small",
+        "attachment": true,
+        "reasoning": true,
+        "reasoning_options": [
+          {
+            "type": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2026-03-16",
+        "last_updated": "2026-03-16",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 262144,
+          "output": 256000
+        },
+        "cost": {
+          "input": 0.15,
+          "output": 0.6,
+          "cache_read": 0.015
+        }
+      },
+      "voxtral-mini-latest": {
+        "id": "voxtral-mini-latest",
+        "type": "transcription",
+        "name": "Voxtral Mini (latest)",
+        "description": "Speech transcription model for accurate audio-to-text and captioning workflows",
+        "family": "voxtral",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": false,
+        "release_date": "2026-02-04",
+        "last_updated": "2026-02-04",
+        "modalities": {
+          "input": [
+            "audio"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "limit": {
+          "context": 0,
+          "output": 0
+        }
+      },
+      "mistral-embed": {
+        "id": "mistral-embed",
+        "type": "embedding",
+        "name": "Mistral Embed",
+        "description": "Embedding model for semantic search, retrieval, clustering, and ranking pipelines",
+        "family": "mistral-embed",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": false,
+        "release_date": "2023-12-11",
+        "last_updated": "2023-12-11",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "limit": {
+          "context": 8000,
+          "output": 3072
+        },
+        "cost": {
+          "input": 0.1,
+          "output": 0
+        }
+      },
+      "mistral-large-2411": {
+        "id": "mistral-large-2411",
+        "name": "Mistral Large 2.1",
+        "description": "Flagship Mistral model for advanced reasoning, coding, and multilingual work",
+        "family": "mistral-large",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-11",
+        "release_date": "2024-11-18",
+        "last_updated": "2024-11-18",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 131072,
+          "output": 16384
+        },
+        "status": "deprecated",
+        "cost": {
+          "input": 2,
+          "output": 6
+        },
+        "canonical_model_id": "mistral/mistral-large-2411"
+      }
+    }
+  },
+  "openai": {
+    "id": "openai",
+    "env": [
+      "OPENAI_API_KEY"
+    ],
+    "npm": "@ai-sdk/openai",
+    "name": "OpenAI",
+    "doc": "https://platform.openai.com/docs/models",
+    "models": {
+      "gpt-4o": {
+        "id": "gpt-4o",
+        "name": "GPT-4o",
+        "description": "Omni-era GPT for multimodal chat, practical coding, and general assistants",
+        "family": "gpt",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-09",
+        "release_date": "2024-05-13",
+        "last_updated": "2024-08-06",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "limit": {
+          "context": 128000,
+          "output": 16384
+        },
+        "experimental": {
+          "modes": {
+            "fast": {
+              "cost": {
+                "input": 4.25,
+                "output": 17,
+                "cache_read": 2.125
+              },
+              "provider": {
+                "body": {
+                  "service_tier": "priority"
+                }
+              }
+            }
+          }
+        },
+        "cost": {
+          "input": 2.5,
+          "output": 10,
+          "cache_read": 1.25
+        }
+      }
+    }
+  }
+}

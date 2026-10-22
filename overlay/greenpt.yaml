@@ -1,0 +1,19 @@
+# Hand-kept GreenPT prices. Overrides every other source, field by field.
+# Prices are written as GreenPT publishes them. Each entry needs `source` and `checked`.
+#
+# <model>:
+#   currency: EUR          # EUR | CHF | USD
+#   per: 1M_tokens         # 1M_tokens | 1K_tokens | token | page | second | minute | hour | character
+#   input: 0.25            # optional: input, cached_input, output
+#   mode: chat             # optional: chat | embedding | rerank | ocr | audio_transcription | audio_speech | image_generation
+#   max_input_tokens: ...  # optional, also max_output_tokens and deprecation_date (YYYY-MM-DD)
+#   source: https://...
+#   checked: 2026-10-22
+
+green-s:
+  currency: EUR
+  per: hour
+  input: 0.23 # pre-recorded audio
+  mode: audio_transcription
+  source: https://docs.greenpt.ai/docs/pricing
+  checked: 2026-10-22

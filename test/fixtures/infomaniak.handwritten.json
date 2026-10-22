@@ -1,0 +1,74 @@
+{
+  "_fixture": "HAND-WRITTEN from Infomaniak's OpenAPI spec (GET /1/ai/models, AiModel + AIPrice schemas) and the prices on https://www.infomaniak.com/en/hosting/ai-tools/prices. Replace with a captured response once INFOMANIAK_TOKEN is available.",
+  "result": "success",
+  "data": [
+    {
+      "id": 101,
+      "name": "swiss-ai/Apertus-v1.5-70B",
+      "type": "llm",
+      "description": "Apertus 70B",
+      "documentation_link": null,
+      "info_status": "ready",
+      "logo_url": null,
+      "last_updated_at": "2026-10-01T00:00:00+00:00",
+      "max_token_input": 100000,
+      "version": null,
+      "meta": { "is_beta": false, "is_coder": false },
+      "prices": [
+        {
+          "label": "Default",
+          "model": "swiss-ai/Apertus-v1.5-70B",
+          "input_amount_excl_vat": 0.7,
+          "output_amount_excl_vat": 2.5,
+          "currency_id": 1,
+          "unit": { "type": "tokens", "amount": 1000000 }
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "name": "mistralai/Mistral-Small-4-119B-2603",
+      "type": "llm",
+      "description": "Mistral Small 4",
+      "documentation_link": null,
+      "info_status": "ready",
+      "logo_url": null,
+      "last_updated_at": "2026-10-01T00:00:00+00:00",
+      "max_token_input": 256000,
+      "version": null,
+      "meta": { "is_beta": false, "is_coder": false },
+      "prices": [
+        {
+          "label": "Default",
+          "model": "mistralai/Mistral-Small-4-119B-2603",
+          "input_amount_excl_vat": 0.2,
+          "output_amount_excl_vat": 0.75,
+          "currency_id": 1,
+          "unit": { "type": "tokens", "amount": 1000000 }
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "name": "whisper",
+      "type": "stt",
+      "description": "Whisper V3",
+      "documentation_link": null,
+      "info_status": "ready",
+      "logo_url": null,
+      "last_updated_at": "2026-10-01T00:00:00+00:00",
+      "max_token_input": null,
+      "version": null,
+      "meta": { "is_beta": false, "is_coder": false },
+      "prices": [
+        {
+          "label": "Default",
+          "model": "whisper",
+          "amount_excl_vat": 0.006,
+          "currency_id": 1,
+          "unit": { "type": "minute", "amount": 1 }
+        }
+      ]
+    }
+  ]
+}

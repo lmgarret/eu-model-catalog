@@ -1,0 +1,10 @@
+# Hand-kept Mistral prices. Overrides every other source, field by field.
+# See overlay/greenpt.yaml for the entry format.
+
+voxtral-mini-latest:
+  currency: USD
+  per: minute
+  input: 0.003
+  mode: audio_transcription
+  source: https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-26-02
+  checked: 2026-10-22
