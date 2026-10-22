@@ -1,0 +1,95 @@
+# Regolo.ai facts. Mostly Regolo's own claims, not verified. See src/facts.ts for the schema.
+name: Regolo.ai
+website: https://regolo.ai
+logo: regolo-ai
+color: "#58e388"
+
+privacy:
+  retention:
+    value: { days: 0 }
+    note: Prompts and outputs kept "never", except storage services the user activates themselves.
+    source: https://regolo.ai/privacy-policy/
+    checked: 2026-10-22
+  zero_data_retention:
+    value: default
+    note: No storage or logging of prompts or outputs; ZDR certified by an unnamed third-party firm on 2026-07-24.
+    source: https://regolo.ai/zero-data-retention/
+    checked: 2026-10-22
+  training:
+    value: never
+    note: '"No use of data for training, fine-tuning, or any other secondary purpose."'
+    source: https://regolo.ai/zero-data-retention/
+    checked: 2026-10-22
+  dpa:
+    value: { available: true }
+    note: DPA is part of the terms; Seeweb keeps a list of authorised sub-processors but does not publish it.
+    source: https://regolo.ai/terms-and-conditions/#data-processor-agreement
+    checked: 2026-10-22
+
+jurisdiction:
+  regions:
+    value:
+      - { country: IT, city: Frosinone }
+      - { country: IT }
+    note: Province of Frosinone (Lazio) and Lombardy; the Lombardy city is not named on the page.
+    source: https://regolo.ai/team-infrastructure/
+    checked: 2026-10-22
+  legal_entity:
+    value: { name: Seeweb S.r.l., country: IT }
+    note: Registered office in Frosinone; Italian law, Court of Frosinone.
+    source: https://regolo.ai/terms-and-conditions/
+    checked: 2026-10-22
+  parent_company:
+    value: { name: DHH S.p.A., country: IT, us_cloud_act: false }
+    note: Milan-based group listed on Euronext Growth Milan; Seeweb is one of its cloud brands.
+    source: https://www.dhh.international/
+    checked: 2026-10-22
+  certifications:
+    value: [ISO27001, ISO27017, ISO27018, ISO22301, ISO20000, ISO9001, ISO14001, CSA-STAR-1, ACN]
+    note: Logos shown on the site, not further detailed; also a CISPE membership and a ZDR certificate.
+    source: https://regolo.ai/team-infrastructure/
+    checked: 2026-10-22
+
+sustainability:
+  renewable_energy:
+    value: { share: 100, backing: unknown }
+    note: '"Wind, solar, and other renewable sources"; no detail on PPAs or certificates.'
+    source: https://regolo.ai/sustainable-ai/
+    checked: 2026-10-22
+
+operations:
+  sla:
+    value: {}
+    note: "Plan: enterprise only (custom SLAs); no published uptime figure."
+    source: https://regolo.ai/faq/
+    checked: 2026-10-22
+  status_page: https://obs.regolo.ai/
+  rate_limits:
+    value: "Subscription daily token caps: 20M (Core), 50M (Boost), 100M (Pro), 200M (Scale); custom for enterprise; stricter limits on free trial."
+    source: https://regolo.ai/pricing/
+    checked: 2026-10-22
+  openai_compatible:
+    value: true
+    source: https://regolo.ai/faq/
+    checked: 2026-10-22
+  billing:
+    value: { currency: EUR, entity: Seeweb S.r.l., minimum_commitment: none (pay-as-you-go) }
+    note: Subscriptions from EUR 39/month are also available; prices exclude VAT.
+    source: https://regolo.ai/pricing/
+    checked: 2026-10-22
+
+# Defaults are already maximum privacy: no storage, logging or training, EU-only processing, no
+# documented region choice or storage feature to turn off. Only the DPA paperwork is left.
+privacy_setup:
+  - id: signed_dpa
+    title: Get a countersigned DPA
+    how: The DPA is accepted automatically on subscription; for a signed copy, email privacy@regolo.ai with your name and the purpose, and allow a few days.
+    access: on_request
+    source: https://regolo.ai/faq/
+    checked: 2026-10-22
+  - id: subprocessor_list
+    title: Ask for the sub-processor list
+    how: Under the DPA Seeweb keeps a list of authorised sub-processors and must notify changes so you can object, but the list is not published; ask Seeweb for it (e.g. via privacy@regolo.ai).
+    access: on_request
+    source: https://regolo.ai/terms-and-conditions/#data-processor-agreement
+    checked: 2026-10-22

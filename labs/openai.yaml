@@ -1,0 +1,31 @@
+name: OpenAI
+country: US
+website: https://openai.com
+logo: openai
+eu_ai_act:
+  value: signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+
+models:
+  gpt-oss-120b:
+    name: gpt-oss-120b
+    license: Apache-2.0
+    open_weights: true
+    hf: openai/gpt-oss-120b
+    source: https://huggingface.co/openai/gpt-oss-120b
+    checked: 2026-10-22
+  gpt-oss-20b:
+    name: gpt-oss-20b
+    license: Apache-2.0
+    open_weights: true
+    hf: openai/gpt-oss-20b
+    source: https://huggingface.co/openai/gpt-oss-20b
+    checked: 2026-10-22
+  whisper-large-v3:
+    name: Whisper large-v3
+    license: Apache-2.0
+    open_weights: true
+    hf: openai/whisper-large-v3
+    source: https://huggingface.co/openai/whisper-large-v3
+    checked: 2026-10-22

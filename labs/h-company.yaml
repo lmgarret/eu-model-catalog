@@ -1,0 +1,14 @@
+name: H Company
+country: FR
+website: https://www.hcompany.ai
+aliases: [Hcompany]
+
+models:
+  holo2-30b-a3b:
+    name: Holo2 30B A3B
+    license: CC-BY-NC-4.0
+    open_weights: true
+    hf: Hcompany/Holo2-30B-A3B
+    source: https://huggingface.co/Hcompany/Holo2-30B-A3B
+    checked: 2026-10-22
+    note: Smaller Holo2 sizes (4B, 8B) are Apache-2.0; the 30B-A3B is non-commercial.

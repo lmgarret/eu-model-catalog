@@ -1,0 +1,20 @@
+name: Beijing Academy of Artificial Intelligence (BAAI)
+country: CN
+website: https://www.baai.ac.cn
+
+models:
+  bge-multilingual-gemma2:
+    name: BGE Multilingual Gemma2
+    license: Gemma Terms of Use
+    open_weights: true
+    hf: BAAI/bge-multilingual-gemma2
+    source: https://huggingface.co/BAAI/bge-multilingual-gemma2
+    checked: 2026-10-22
+    note: Built on Gemma 2, so it inherits the Gemma license.
+  bge-reranker-v2-m3:
+    name: BGE Reranker v2 M3
+    license: Apache-2.0
+    open_weights: true
+    hf: BAAI/bge-reranker-v2-m3
+    source: https://huggingface.co/BAAI/bge-reranker-v2-m3
+    checked: 2026-10-22

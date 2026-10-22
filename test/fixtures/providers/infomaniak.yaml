@@ -1,0 +1,23 @@
+# Trimmed for tests. Not real data.
+name: Infomaniak
+website: https://www.infomaniak.com
+logo: infomaniak
+privacy:
+  retention:
+    value: { days: 0 }
+    source: https://example.com/infomaniak/privacy
+    checked: 2026-10-22
+  training:
+    value: never
+    source: https://example.com/infomaniak/privacy
+    checked: 2026-01-10
+jurisdiction:
+  legal_entity:
+    value: { name: Infomaniak Network SA, country: CH }
+    source: https://example.com/infomaniak/legal
+    checked: 2026-10-22
+sustainability:
+  heat_reuse:
+    value: true
+    source: https://example.com/infomaniak/dc
+    checked: 2026-10-22

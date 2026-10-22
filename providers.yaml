@@ -6,6 +6,10 @@
 #   including case: Bifrost compares provider names case-sensitively.
 # models_dev_id: the provider id on https://models.dev/api.json.
 # currency: pinned invoice currency. A provider API returning another currency fails the build.
+# lab: set when the provider also develops its models (a key in labs/), so its model ids map to that lab.
+#
+# Adding a provider: an entry here, then optionally overlay/<key>.yaml, providers/<key>.yaml (facts),
+# a logo in site/public/logos and an API module in src/sources/providers.
 
 greenpt:
   bifrost_provider: GreenPT
@@ -28,3 +32,4 @@ infomaniak:
 mistral:
   bifrost_provider: mistral
   models_dev_id: mistral
+  lab: mistral

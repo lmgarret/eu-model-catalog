@@ -1,0 +1,13 @@
+name: Tencent ARC Lab
+country: CN
+website: https://arc.tencent.com
+aliases: [TencentARC]
+
+models:
+  photomaker-v2:
+    name: PhotoMaker V2
+    license: Apache-2.0
+    open_weights: true
+    hf: TencentARC/PhotoMaker-V2
+    source: https://huggingface.co/TencentARC/PhotoMaker-V2
+    checked: 2026-10-22

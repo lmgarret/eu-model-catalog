@@ -1,0 +1,25 @@
+# Trimmed for tests. Not real data.
+name: Mistral AI
+country: FR
+website: https://mistral.ai
+logo: mistral
+aliases: [mistralai]
+eu_ai_act:
+  value: signatory
+  source: https://example.com/gpai
+  checked: 2026-10-22
+models:
+  mistral-small-2506:
+    name: Mistral Small 3.2
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    aliases: [mistral-small-latest]
+    source: https://example.com/mistral-small
+    checked: 2026-10-22
+  mistral-large-2411:
+    name: Mistral Large 2.1
+    license: Proprietary
+    open_weights: false
+    source: https://example.com/mistral-large
+    checked: 2026-01-10

@@ -31,6 +31,30 @@ export const decimalString = z.string().regex(/^\d+(\.\d+)?(e-?\d+)?$/i, "not a 
 
 export const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "expected YYYY-MM-DD");
 
+/** Model facts other than prices and limits: origin, license, lifecycle and features. */
+export const modelInfoSchema = z
+  .object({
+    name: z.string(),
+    family: z.string(),
+    /** `<lab>/<model>`, as models.dev names the original of a rebranded or hosted model. */
+    canonical_id: z.string(),
+    /** Key in labs/. */
+    lab: z.string(),
+    license: z.string(),
+    open_weights: z.boolean(),
+    /** YYYY-MM or YYYY-MM-DD. */
+    knowledge_cutoff: z.string(),
+    release_date: z.string(),
+    reasoning: z.boolean(),
+    tool_call: z.boolean(),
+    structured_output: z.boolean(),
+    input_modalities: z.array(z.string()),
+    output_modalities: z.array(z.string()),
+  })
+  .partial();
+export type ModelInfo = z.infer<typeof modelInfoSchema>;
+export const INFO_KEYS = Object.keys(modelInfoSchema.shape) as (keyof ModelInfo)[];
+
 /** The common record every source module maps its response to. */
 export const modelRecordSchema = z.object({
   provider: z.string(),
@@ -47,6 +71,7 @@ export const modelRecordSchema = z.object({
   /** Billed on input only (e.g. decision models), so a missing output price is expected. */
   input_only: z.boolean().optional(),
   deprecation_date: isoDate.optional(),
+  info: modelInfoSchema.optional(),
   source_url: z.string().optional(),
   /** ISO timestamp for fetched sources, the `checked` date for the overlay. */
   fetched_at: z.string(),

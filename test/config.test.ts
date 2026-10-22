@@ -35,10 +35,16 @@ describe("overlay", () => {
     expect(() => parseOverlay("x.yaml", entry.replace("EUR", "GBP"))).toThrow(HardError);
   });
 
+  it("accepts model facts without prices, but prices need a currency and unit", () => {
+    const facts = "x:\n  license: MIT\n  open_weights: true\n  source: https://example.com\n  checked: 2026-10-22\n";
+    expect(parseOverlay("x.yaml", facts).x).toMatchObject({ license: "MIT", open_weights: true });
+    expect(() => parseOverlay("x.yaml", entry.replace(/ {2}currency:.*\n/, ""))).toThrow(HardError);
+  });
+
   it("validates the committed overlay and providers.yaml", async () => {
-    const overlay = await loadOverlay(path.join(ROOT, "overlay"));
-    expect(Object.keys(overlay).sort()).toEqual(["greenpt", "infomaniak", "mistral", "regolo"]);
     const providers = await loadProviders(path.join(ROOT, "providers.yaml"));
-    expect(providers.regolo.models_dev_id).toBe("regolo-ai");
+    expect(providers.regolo?.models_dev_id).toBe("regolo-ai");
+    const overlay = await loadOverlay(path.join(ROOT, "overlay"), Object.keys(providers));
+    expect(Object.keys(overlay).sort()).toEqual(["greenpt", "infomaniak", "mistral", "regolo"]);
   });
 });

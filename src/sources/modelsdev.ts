@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ProviderKey, ProvidersConfig } from "../config.js";
+import type { ProvidersConfig } from "../config.js";
 import type { Mode, ModelRecord } from "../model.js";
 import { positiveInt, priceOf } from "./providers/types.js";
 
@@ -8,6 +8,16 @@ export const MODELS_DEV_URL = "https://models.dev/api.json";
 const modelSchema = z.object({
   id: z.string(),
   type: z.string().optional(),
+  name: z.string().optional(),
+  family: z.string().optional(),
+  canonical_model_id: z.string().optional(),
+  open_weights: z.boolean().optional(),
+  knowledge: z.string().optional(),
+  release_date: z.string().optional(),
+  reasoning: z.boolean().optional(),
+  tool_call: z.boolean().optional(),
+  structured_output: z.boolean().optional(),
+  modalities: z.object({ input: z.array(z.string()), output: z.array(z.string()) }).partial().optional(),
   cost: z
     .object({ input: z.number().nullish(), output: z.number().nullish(), cache_read: z.number().nullish() })
     .optional(),
@@ -32,7 +42,7 @@ const MODE_BY_TYPE: Record<string, Mode> = {
 export function parseModelsDev(raw: unknown, providers: ProvidersConfig, fetchedAt: string): ModelRecord[] {
   const root = z.record(z.string(), z.unknown()).parse(raw);
   const records: ModelRecord[] = [];
-  for (const [provider, config] of Object.entries(providers) as [ProviderKey, ProvidersConfig[ProviderKey]][]) {
+  for (const [provider, config] of Object.entries(providers)) {
     const entry = root[config.models_dev_id];
     if (entry === undefined) continue;
     for (const m of Object.values(providerSchema.parse(entry).models)) {
@@ -52,6 +62,19 @@ export function parseModelsDev(raw: unknown, providers: ProvidersConfig, fetched
           max_output_tokens: positiveInt(m.limit?.output),
         },
         mode: m.type ? MODE_BY_TYPE[m.type] : "chat",
+        info: {
+          name: m.name,
+          family: m.family,
+          canonical_id: m.canonical_model_id,
+          open_weights: m.open_weights,
+          knowledge_cutoff: m.knowledge,
+          release_date: m.release_date,
+          reasoning: m.reasoning,
+          tool_call: m.tool_call,
+          structured_output: m.structured_output,
+          input_modalities: m.modalities?.input,
+          output_modalities: m.modalities?.output,
+        },
         source_url: `https://models.dev/?search=${encodeURIComponent(config.models_dev_id)}`,
         fetched_at: fetchedAt,
       });

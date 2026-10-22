@@ -3,7 +3,8 @@ import path from "node:path";
 import type { BuildInputs } from "../src/build.js";
 import type { SourceState } from "../src/catalog.js";
 import { normalizeRecords } from "../src/collect.js";
-import { type ProviderKey, loadOverlay, loadProviders } from "../src/config.js";
+import { loadOverlay, loadProviders } from "../src/config.js";
+import { loadLabs, loadProviderFacts } from "../src/facts.js";
 import { parseDatasheet } from "../src/sources/bifrost.js";
 import { parseEcb } from "../src/sources/ecb.js";
 import { parseModelsDev } from "../src/sources/modelsdev.js";
@@ -17,7 +18,7 @@ export function fixture(name: string): unknown {
   return JSON.parse(readFileSync(path.join(FIXTURES, name), "utf8"));
 }
 
-export const API_FIXTURES: Record<ProviderKey, string> = {
+export const API_FIXTURES: Record<keyof typeof PROVIDER_APIS, string> = {
   greenpt: "greenpt.json",
   regolo: "regolo.json",
   infomaniak: "infomaniak.handwritten.json",
@@ -34,7 +35,7 @@ export async function loadFixtureInputs(): Promise<BuildInputs> {
       fetched_at: BUILT_AT,
       records: normalizeRecords(parseModelsDev(fixture("models-dev.json"), providers, BUILT_AT)),
     },
-    ...(Object.keys(API_FIXTURES) as ProviderKey[]).map(
+    ...(Object.keys(API_FIXTURES) as (keyof typeof PROVIDER_APIS)[]).map(
       (p): SourceState => ({
         id: `api:${p}`,
         kind: "api",
@@ -42,7 +43,7 @@ export async function loadFixtureInputs(): Promise<BuildInputs> {
         status: "ok",
         fetched_at: BUILT_AT,
         records: normalizeRecords(
-          PROVIDER_APIS[p].parse(fixture(API_FIXTURES[p]), { config: providers[p], fetchedAt: BUILT_AT }),
+          PROVIDER_APIS[p].parse(fixture(API_FIXTURES[p]), { config: providers[p]!, fetchedAt: BUILT_AT }),
         ),
       }),
     ),
@@ -50,7 +51,10 @@ export async function loadFixtureInputs(): Promise<BuildInputs> {
   return {
     builtAt: BUILT_AT,
     providers,
-    overlay: await loadOverlay(path.join(FIXTURES, "overlay")),
+    overlay: await loadOverlay(path.join(FIXTURES, "overlay"), Object.keys(providers)),
+    facts: await loadProviderFacts(path.join(FIXTURES, "providers"), Object.keys(providers)),
+    labs: await loadLabs(path.join(FIXTURES, "labs")),
+    hfLicenses: new Map(),
     datasheet: parseDatasheet(fixture("bifrost-datasheet.json"), 0),
     rates: parseEcb(readFileSync(path.join(FIXTURES, "ecb.xml"), "utf8")),
     sources,

@@ -1,0 +1,99 @@
+# GreenPT facts. Mostly GreenPT's own claims, not verified. See src/facts.ts for the schema.
+name: GreenPT
+website: https://greenpt.ai
+logo: greenpt
+color: "#3ec872"
+
+privacy:
+  retention:
+    value: { days: 0 }
+    note: API payloads are processed in memory only and not stored; only error logs and content-free metrics are kept. Web chat history is kept until deleted, 12 months max.
+    source: https://greenpt.com/privacy-policy
+    checked: 2026-10-22
+  zero_data_retention:
+    value: default
+    note: Applies to API payloads and audio; not to GreenPT Chat history.
+    source: https://greenpt.com/privacy-policy
+    checked: 2026-10-22
+  training:
+    value: never
+    note: Covers conversations, documents and API traffic, including on the US sub-processor.
+    source: https://greenpt.com/privacy
+    checked: 2026-10-22
+  dpa:
+    value: { available: true, subprocessors_url: https://docs.greenpt.ai/privacy/processor }
+    note: Standard DPA signed with every paying customer; custom DPA negotiable.
+    source: https://greenpt.com/privacy
+    checked: 2026-10-22
+
+jurisdiction:
+  regions:
+    value:
+      - { country: FR, city: Paris }
+      - { country: FI, city: Helsinki }
+    note: The default EU endpoint (api.greenpt.ai) runs on Scaleway in Paris and Inceptron, Tensorix and Melious in Verda data centres in Helsinki (city per greenpt.com/sustainability). An optional US endpoint (api.us.greenpt.ai, Neuralwatt Inc.) is used only if you set it as base URL, so it is not counted here. Account, billing and usage data stay in the EU either way.
+    source: https://docs.greenpt.ai/privacy/locations
+    checked: 2026-10-22
+  legal_entity:
+    value: { name: GreenPT BV, country: NL }
+    note: Utrecht, Chamber of Commerce 97084360. Terms governed by Dutch law.
+    source: https://greenpt.com/terms-of-service
+    checked: 2026-10-22
+  parent_company:
+    value: { name: GreenPT BV, country: NL, us_cloud_act: false }
+    note: No parent company stated. The opt-in US endpoint uses a US sub-processor (Neuralwatt Inc.).
+    source: https://greenpt.com/about
+    checked: 2026-10-22
+  certifications:
+    value: [ISO27001, ISO50001, HDS]
+    note: Held by hosting provider Scaleway, not GreenPT BV, which is working towards its own ISO 27001.
+    source: https://greenpt.com/privacy-policy
+    checked: 2026-10-22
+
+sustainability:
+  renewable_energy:
+    value: { share: 100, backing: unknown }
+    note: Scaleway (Paris) said to be certified 100% renewable; Verda (Helsinki) hydro and wind. Mechanism (PPA vs certificates) not stated. Covers EU hosting only.
+    source: https://greenpt.com/sustainability
+    checked: 2026-10-22
+  pue:
+    value: 1.25
+    note: Scaleway Paris DC5 2024 figure (Scaleway Impact Report 2025). Verda Helsinki sites 1.2 to 1.3.
+    source: https://docs.greenpt.ai/sustainability
+    checked: 2026-10-22
+
+operations:
+  sla:
+    value: { uptime: 99.5 }
+    note: Monthly uptime target in the Terms, not a contractual SLA with credits.
+    source: https://greenpt.com/terms-of-service
+    checked: 2026-10-22
+  status_page: https://status.greenpt.ai/
+  rate_limits:
+    value: 600 requests per 5-minute window per account, shared across all keys and endpoints.
+    source: https://docs.greenpt.ai/chat-completion
+    checked: 2026-10-22
+  openai_compatible:
+    value: true
+    source: https://greenpt.com/api
+    checked: 2026-10-22
+  billing:
+    value: { currency: EUR, entity: GreenPT BV, minimum_commitment: none }
+    note: Prepaid API credits that don't expire; API-only account is free. API needs an active Pro, Teams or API-only subscription. Entity per the Terms of Service.
+    source: https://docs.greenpt.ai/subscriptions
+    checked: 2026-10-22
+
+privacy_setup:
+  - id: sign_dpa
+    title: Request the Data Processing Agreement
+    how: Ask for GreenPT's standard DPA through the contact form (greenpt.com/contact), or fill in the custom DPA request form on docs.greenpt.ai for bespoke terms; GreenPT prepares it and typically replies within 2-3 business days.
+    access: on_request
+    cost: The docs say a DPA is for customers spending at least EUR 500/month, otherwise a EUR 500/month minimum applies; greenpt.com/privacy says every paying customer gets the standard DPA.
+    source: https://docs.greenpt.ai/privacy/custom-dpa
+    checked: 2026-10-22
+  - id: on_premise
+    title: Deploy GreenPT on premise
+    how: For full data sovereignty, contact GreenPT about its on-premise deployment option, which keeps all data on infrastructure you control. Terms and pricing are not published.
+    access: enterprise
+    source: https://greenpt.com/privacy-policy
+    checked: 2026-10-22

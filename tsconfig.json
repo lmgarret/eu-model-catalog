@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "noEmit": true,
+    "paths": { "$lib": ["./site/src/lib"], "$lib/*": ["./site/src/lib/*"] },
     "types": ["node"]
   },
   "include": ["src", "test", "*.ts"]

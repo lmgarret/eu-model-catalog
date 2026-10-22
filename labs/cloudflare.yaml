@@ -1,0 +1,14 @@
+name: Cloudflare
+country: US
+website: https://www.cloudflare.com
+color: '#f38020'
+
+models:
+  clef-flash:
+    name: Clef Flash
+    license: Apache-2.0
+    open_weights: true
+    hf: Cloudflare/clef-flash
+    source: https://huggingface.co/Cloudflare/clef-flash
+    checked: 2026-10-22
+    note: Decision model fine-tuned from Qwen3.5-9B.

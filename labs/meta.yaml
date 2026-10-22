@@ -1,0 +1,20 @@
+name: Meta
+country: US
+website: https://www.llama.com
+logo: meta
+color: '#0668e1'
+aliases: [meta-llama]
+eu_ai_act:
+  value: not_signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+  note: Not on the European Commission's signatory list (updated 2026-10-07); Meta publicly declined to sign in July 2025.
+
+models:
+  llama-3.3-70b-instruct:
+    name: Llama 3.3 70B Instruct
+    license: Llama 3.3 Community License
+    open_weights: true
+    hf: meta-llama/Llama-3.3-70B-Instruct
+    source: https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct
+    checked: 2026-10-22

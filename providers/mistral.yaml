@@ -1,0 +1,128 @@
+# Mistral AI facts. Mostly Mistral's own claims, not verified. See src/facts.ts for the schema.
+name: Mistral AI
+website: https://mistral.ai
+logo: mistral
+color: "#fa500f"
+
+privacy:
+  retention:
+    value: { days: 30 }
+    note: Inputs/outputs kept for 30 rolling days to monitor abuse unless ZDR is active. Agents API data is kept until account termination; fine-tuning data until deleted.
+    source: https://legal.mistral.ai/terms/privacy-policy
+    checked: 2026-10-22
+    best: { value: { days: 0 }, via: request_zdr }
+  zero_data_retention:
+    value: on_request
+    note: Pay-as-you-go only, approved at Mistral's discretion, and only for stateless endpoints (chat, FIM, embeddings, moderation, OCR, audio). Not for agents, batch, files or conversations.
+    source: https://help.mistral.ai/en/articles/347612-can-i-activate-zero-data-retention-zdr
+    checked: 2026-10-22
+    best: { value: default, via: request_zdr }
+  training:
+    value: opt_out
+    note: "API inputs/outputs train Mistral's models by default, free and pay-as-you-go alike, until you switch off 'Anonymous improvement data'. The DPA (§2.3) lets Mistral train 'unless Customer is or has opted-out', and the privacy policy says training uses your inputs and outputs 'subject to your opt-out'. Commercial Terms §4.2 does not contradict this: its 'no training' rule excludes products 'set to opt-in by default' that you have not opted out of, and the API is one of those. Feedback and Labs/Preview models are always used for training, whatever you opted out of."
+    source: https://legal.mistral.ai/terms/data-processing-addendum
+    checked: 2026-10-22
+    best: { value: never, via: avoid_labs_models }
+  dpa:
+    value: { available: true, subprocessors_url: "https://trust.mistral.ai/subprocessors" }
+    note: Online DPA incorporated by reference; Mistral says it cannot sign the DPA offline. SCCs for transfers outside the EEA.
+    source: https://legal.mistral.ai/terms/data-processing-addendum
+    checked: 2026-10-22
+
+jurisdiction:
+  regions:
+    value:
+      - { country: SE }
+      - { country: "NO" }
+      - { country: FR }
+      - { country: NL }
+      - { country: BE }
+      - { country: US }
+    note: "The default global endpoint (api.mistral.ai) makes no location commitment, so requests may run anywhere Mistral hosts. Hosting sub-processors include US hyperscalers: Microsoft Azure (SE, NO), Google Cloud (NL, BE, US) and CoreWeave (EEA), plus Mistral Compute (FR). The EU endpoint (api.eu.mistral.ai, +10%) keeps inference in 'EU and EFTA countries' without naming them; the best list is the non-US hosting locations above. Control-plane data (account, keys, billing, usage analytics) may still be handled outside the region."
+    source: https://trust.mistral.ai/subprocessors
+    checked: 2026-10-22
+    best:
+      value:
+        - { country: SE }
+        - { country: "NO" }
+        - { country: FR }
+        - { country: NL }
+        - { country: BE }
+      via: use_eu_endpoint
+  legal_entity:
+    value: { name: Mistral AI, country: FR }
+    note: French company, RCS Paris 952 418 325, 15 rue des Halles, 75001 Paris. Governing law is French outside the Americas (California) and APAC (Singapore).
+    source: https://legal.mistral.ai/terms/commercial-terms-of-service
+    checked: 2026-10-22
+  parent_company:
+    value: { name: Mistral AI, country: FR, us_cloud_act: false }
+    note: Independent French company. Its hosting sub-processors include US companies (Microsoft, Google, CoreWeave).
+    source: https://legal.mistral.ai/terms/commercial-terms-of-service
+    checked: 2026-10-22
+  certifications:
+    value: [ISO27001, ISO27701, SOC2]
+    note: ISO/IEC 27001:2022, ISO/IEC 27701:2019 and SOC 2 Type II; reports on request. A HIPAA BAA is offered for qualifying services.
+    source: https://trust.mistral.ai
+    checked: 2026-10-22
+
+sustainability:
+  co2:
+    value: { grams: 1.14, per: request }
+    note: From Mistral's LCA (with Carbone 4 and ADEME) for Mistral Large 2. It covers the marginal inference impact of one 400-token Le Chat response, excluding user devices. That is about 2,850 g per 1M output tokens if scaled linearly.
+    source: https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai
+    checked: 2026-10-22
+
+operations:
+  status_page: https://status.mistral.ai
+  rate_limits:
+    value: "Per workspace: requests/s, tokens/min and tokens/month per model. Free mode is limited; pay-as-you-go tiers 1-4 unlock automatically at €20/€100/€500 billed; higher limits via support."
+    source: https://help.mistral.ai/en/articles/698531-why-am-i-hitting-api-rate-limits-and-how-do-i-increase-them
+    checked: 2026-10-22
+  openai_compatible:
+    value: true
+    note: Chat Completions follows the same request structure as OpenAI. Mistral's guide switches to its own SDK, but the OpenAI SDK works with base_url https://api.mistral.ai/v1.
+    source: https://docs.mistral.ai/resources/migration-guides
+    checked: 2026-10-22
+  batch:
+    value: { discount_percent: 50 }
+    source: https://docs.mistral.ai/studio/batch-processing
+    checked: 2026-10-22
+  billing:
+    value: { currency: EUR, entity: Mistral AI, minimum_commitment: "None; pay-as-you-go draws on prepaid credits" }
+    note: The organization's billing currency can be EUR or USD (prices are listed in both). The contracting entity is Mistral AI (Paris) per the Commercial Terms.
+    source: https://docs.mistral.ai/admin/billing-usage/billing
+    checked: 2026-10-22
+
+privacy_setup:
+  - id: use_eu_endpoint
+    title: Use the EU regional endpoint
+    how: Send requests to https://api.eu.mistral.ai instead of the global api.mistral.ai, which makes no location commitment (SDK 2.70+ takes server="eu"). It serves only EU-hosted models, supports function calling as its only tool, and has no Agents, Batch or Files API.
+    access: self_serve
+    cost: +10% (1.1x list price on input, output and cache tokens)
+    source: https://docs.mistral.ai/studio/regional-inference
+    checked: 2026-10-22
+  - id: opt_out_of_training
+    title: Turn off training on your API data
+    how: In the admin panel (https://admin.mistral.ai), open Privacy and disable the "Anonymous improvement data" toggle. It is on by default, and it is separate from the Vibe toggle.
+    access: self_serve
+    source: https://help.mistral.ai/en/articles/455207-can-i-opt-out-of-my-input-or-output-data-being-used-for-training
+    checked: 2026-10-22
+  - id: avoid_labs_models
+    title: Avoid Labs and Preview models, and don't send feedback
+    how: "Don't call Labs or Preview models (model ids starting with labs-): Mistral trains on their data, and neither the training opt-out from the previous step nor ZDR applies to them. Feedback is always used for training too."
+    access: self_serve
+    source: https://legal.mistral.ai/terms/commercial-terms-of-service
+    checked: 2026-10-22
+  - id: use_stateless_endpoints_only
+    title: Stick to stateless endpoints
+    how: "Use only chat, FIM, embeddings, moderation/classification, OCR and audio. Agents API data is kept until you close your account, and ZDR doesn't cover agents, conversations, libraries, batch or the Files API."
+    access: self_serve
+    source: https://help.mistral.ai/en/articles/347612-can-i-activate-zero-data-retention-zdr
+    checked: 2026-10-22
+  - id: request_zdr
+    title: Request zero data retention
+    how: On a pay-as-you-go plan, request ZDR through the Help Center or support (https://help.mistral.ai) and explain your legitimate reasons. Mistral approves it at its discretion. It then drops the 30-day abuse-monitoring retention, but only for the stateless endpoints from the previous step.
+    access: on_request
+    cost: Pay-as-you-go plan required (not Free mode)
+    source: https://help.mistral.ai/en/articles/347612-can-i-activate-zero-data-retention-zdr
+    checked: 2026-10-22

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { CURRENCIES, MODES, SOURCES, UNITS, isoDate, modelRecordSchema } from "./model.js";
+import { labModelSchema, labSchema, providerFactsSchema } from "./facts.js";
+import { CURRENCIES, MODES, SOURCES, UNITS, isoDate, type ModelInfo, modelRecordSchema } from "./model.js";
 import { BIFROST_PRICE_FIELDS } from "./money.js";
 import { WARNING_CODES } from "./warnings.js";
 
@@ -33,12 +34,43 @@ const priceSchema = z.object({
 });
 export type CatalogPrice = z.infer<typeof priceSchema>;
 
+/** Model facts come from the price sources and from labs/, which ranks just below the overlay. */
+export const INFO_SOURCES = ["bifrost", "models.dev", "api", "labs", "overlay"] as const;
+
+const infoField = <T extends z.ZodType>(value: T) =>
+  z.object({ value, source: z.enum(INFO_SOURCES), at: z.string(), url: z.string().optional() });
+
+const str = infoField(z.string()).optional();
+const bool = infoField(z.boolean()).optional();
+const list = infoField(z.array(z.string())).optional();
+
+export const catalogInfoSchema = z.object({
+  name: str,
+  family: str,
+  canonical_id: str,
+  lab: str,
+  license: str,
+  open_weights: bool,
+  knowledge_cutoff: str,
+  release_date: str,
+  reasoning: bool,
+  tool_call: bool,
+  structured_output: bool,
+  input_modalities: list,
+  output_modalities: list,
+} satisfies Record<keyof ModelInfo, z.ZodType>);
+export type CatalogInfo = z.infer<typeof catalogInfoSchema>;
+
 export const catalogModelSchema = z.object({
   provider: z.string(),
   bifrost_provider: z.string(),
   model: z.string(),
   /** Key in pricing.json, or null when no source prices the model. */
   pricing_key: z.string().nullable(),
+  /** `<bifrost_provider>/<model>`, the model id requests to Bifrost use. */
+  bifrost_id: z.string().default(""),
+  /** `<lab>/<slug>`: the same canonical id means the same model on another host. Null when unattributed. */
+  canonical_id: z.string().nullable().default(null),
   mode: field(z.enum(MODES)).optional(),
   prices: z.partialRecord(z.enum(BIFROST_PRICE_FIELDS), priceSchema),
   limits: z.object({
@@ -46,6 +78,8 @@ export const catalogModelSchema = z.object({
     max_output_tokens: field(z.number().int().positive()).optional(),
   }),
   deprecation_date: field(isoDate).optional(),
+  /** Optional so catalogs from before model facts still parse as the previous catalog. */
+  info: catalogInfoSchema.default({}),
   /** Open-ended, for benchmarks and other future data. */
   extra: z.record(z.string(), z.unknown()),
 });
@@ -62,8 +96,28 @@ export const catalogSchema = z.object({
   }),
   providers: z.record(
     z.string(),
-    z.object({ bifrost_provider: z.string(), models_dev_id: z.string(), currency: z.enum(CURRENCIES).optional() }),
+    z.object({
+      bifrost_provider: z.string(),
+      models_dev_id: z.string(),
+      currency: z.enum(CURRENCIES).optional(),
+      /** providers/<provider>.yaml. Optional so older catalogs still parse. */
+      facts: providerFactsSchema.optional(),
+    }),
   ),
+  labs: z
+    .record(
+      z.string(),
+      labSchema.omit({ aliases: true, models: true }).extend({
+        models: z.record(
+          z.string(),
+          labModelSchema.omit({ aliases: true }).extend({
+            /** Set when the license comes from the Hugging Face model card. */
+            license_url: z.string().optional(),
+          }),
+        ),
+      }),
+    )
+    .default({}),
   warnings: z.array(
     z.object({
       code: z.enum(WARNING_CODES),

@@ -1,0 +1,19 @@
+name: Regolo.ai (Seeweb)
+country: IT
+website: https://regolo.ai
+logo: regolo-ai
+
+models:
+  brick-v1-beta:
+    name: Brick v1 Beta
+    source: https://regolo.ai/models
+    checked: 2026-10-22
+    note: Regolo's semantic router; it forwards each request to a backend model and bills at that model's price.
+  brick-complexity-pro:
+    name: Brick Complexity Pro
+    source: https://regolo.ai/models
+    checked: 2026-10-22
+    note: >-
+      Regolo's query complexity classifier for the Brick router. API-only; Regolo's open Brick
+      complexity models on Hugging Face (regolo/brick-complexity-*) are CC-BY-NC-4.0, but it isn't
+      stated which one this serves.

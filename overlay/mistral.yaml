@@ -8,3 +8,14 @@ voxtral-mini-latest:
   mode: audio_transcription
   source: https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-26-02
   checked: 2026-10-22
+
+# Z.ai models Mistral hosts. Mistral's GLM 5.3 card lists zai-glm-5 and zai-glm-latest as its aliases.
+zai-glm-5:
+  canonical: zhipuai/glm-5.3
+  source: https://docs.mistral.ai/models/model-cards/zai-glm-5-3
+  checked: 2026-10-22
+
+zai-glm-latest:
+  canonical: zhipuai/glm-5.3
+  source: https://docs.mistral.ai/models/model-cards/zai-glm-5-3
+  checked: 2026-10-22

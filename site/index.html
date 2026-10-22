@@ -3,14 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="AI models from European providers: prices, privacy, jurisdiction and sustainability." />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%23003399'/><g fill='%23ffcc00'><circle cx='16' cy='6.5' r='1.6'/><circle cx='22.7' cy='9.3' r='1.6'/><circle cx='25.5' cy='16' r='1.6'/><circle cx='22.7' cy='22.7' r='1.6'/><circle cx='16' cy='25.5' r='1.6'/><circle cx='9.3' cy='22.7' r='1.6'/><circle cx='6.5' cy='16' r='1.6'/><circle cx='9.3' cy='9.3' r='1.6'/></g></svg>" />
     <title>EU model catalog</title>
+    <script>
+      // Follow the system theme; shadcn styles key off the .dark class.
+      const dark = matchMedia("(prefers-color-scheme: dark)");
+      const apply = () => document.documentElement.classList.toggle("dark", dark.matches);
+      apply();
+      dark.addEventListener("change", apply);
+    </script>
   </head>
   <body>
-    <h1>EU model catalog</h1>
-    <p>Prices of AI models from European providers, converted to USD.</p>
-    <ul>
-      <li><a href="pricing.json">pricing.json</a>: Bifrost pricing datasheet</li>
-      <li><a href="catalog.json">catalog.json</a>: models, original prices, sources, exchange rates and warnings</li>
-    </ul>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -8,3 +8,25 @@ swiss-ai/Apertus-v1.5-70B:
   output: 2.50
   source: https://www.infomaniak.com/en/hosting/ai-tools/prices
   checked: 2026-10-22
+
+# Models no other source maps to their lab. Infomaniak's price list names them
+# "Whisper V3", "Flux schnell" and "Photomaker V2".
+whisper:
+  canonical: openai/whisper-large-v3
+  source: https://www.infomaniak.com/en/hosting/ai-tools/prices
+  checked: 2026-10-22
+
+flux:
+  canonical: black-forest-labs/flux.1-schnell
+  source: https://www.infomaniak.com/en/hosting/ai-tools/prices
+  checked: 2026-10-22
+
+photomaker:
+  canonical: tencent-arc/photomaker-v2
+  source: https://www.infomaniak.com/en/hosting/ai-tools/prices
+  checked: 2026-10-22
+
+bge_multilingual_gemma2:
+  canonical: baai/bge-multilingual-gemma2
+  source: https://www.infomaniak.com/en/hosting/ai-tools/open-source-models
+  checked: 2026-10-22

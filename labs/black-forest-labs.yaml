@@ -1,0 +1,16 @@
+name: Black Forest Labs
+country: DE
+website: https://bfl.ai
+eu_ai_act:
+  value: signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+
+models:
+  flux.1-schnell:
+    name: FLUX.1 [schnell]
+    license: Apache-2.0
+    open_weights: true
+    hf: black-forest-labs/FLUX.1-schnell
+    source: https://huggingface.co/black-forest-labs/FLUX.1-schnell
+    checked: 2026-10-22
