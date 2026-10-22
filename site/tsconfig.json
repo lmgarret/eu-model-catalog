@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "paths": { "$lib": ["./src/lib"], "$lib/*": ["./src/lib/*"] },
+    "types": ["svelte", "vite/client", "node"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.svelte"]
+}

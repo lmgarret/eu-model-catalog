@@ -42,6 +42,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The site first: its build empties dist/.
+      - run: pnpm build:site
       - run: pnpm build:data
         env:
           INFOMANIAK_TOKEN: ${{ secrets.INFOMANIAK_TOKEN }}
