@@ -1,0 +1,13 @@
+# GreenPT's own models. Its rebrands of other labs' models (green-l, green-r, green-embedding...)
+# resolve to the original lab through models.dev or overlay/greenpt.yaml.
+name: GreenPT
+country: NL
+website: https://greenpt.ai
+logo: greenpt
+
+models:
+  metis:
+    name: Metis
+    source: https://greenpt.ai/models
+    checked: 2026-10-22
+    note: GreenPT's own decision model. Base model and license not disclosed.

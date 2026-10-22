@@ -11,9 +11,32 @@
 #   checked: 2026-10-22
 
 green-s:
+  canonical: deepgram/nova-2
   currency: EUR
   per: hour
   input: 0.23 # pre-recorded audio
   mode: audio_transcription
   source: https://docs.greenpt.ai/docs/pricing
+  checked: 2026-10-22
+
+# Rebrands of other labs' models that models.dev doesn't map, per GreenPT's model list.
+green-s-pro:
+  canonical: deepgram/nova-3
+  source: https://greenpt.ai/models
+  checked: 2026-10-22
+
+# Qwen3-Embedding with up to 2560 dimensions, i.e. the 4B.
+green-embedding:
+  canonical: alibaba/qwen3-embedding-4b
+  source: https://greenpt.ai/models
+  checked: 2026-10-22
+
+green-embeddings:
+  canonical: alibaba/qwen3-embedding-4b
+  source: https://greenpt.ai/models
+  checked: 2026-10-22
+
+green-rerank:
+  canonical: alibaba/qwen3-reranker-4b
+  source: https://greenpt.ai/models
   checked: 2026-10-22

@@ -1,0 +1,105 @@
+# Models are keyed by models.dev's canonical slug, lowercased. See labs/mistral.yaml for the format.
+name: Qwen (Alibaba Cloud)
+country: CN
+website: https://qwen.ai
+logo: qwen
+color: '#615ced'
+aliases: [Qwen]
+eu_ai_act:
+  value: not_signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+  note: Not on the European Commission's list of GPAI Code of Practice signatories (list updated 2026-10-07).
+
+models:
+  qwen3-235b-a22b-instruct-2507:
+    name: Qwen3 235B A22B Instruct 2507
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-235B-A22B-Instruct-2507
+    source: https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct-2507
+    checked: 2026-10-22
+  qwen3-coder-30b-a3b-instruct:
+    name: Qwen3 Coder 30B A3B Instruct
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-Coder-30B-A3B-Instruct
+    source: https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct
+    checked: 2026-10-22
+  qwen3-coder-next:
+    name: Qwen3 Coder Next
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-Coder-Next
+    source: https://huggingface.co/Qwen/Qwen3-Coder-Next
+    checked: 2026-10-22
+  qwen3.5-9b:
+    name: Qwen3.5 9B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3.5-9B
+    source: https://huggingface.co/Qwen/Qwen3.5-9B
+    checked: 2026-10-22
+  qwen3.5-122b-a10b:
+    name: Qwen3.5 122B A10B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3.5-122B-A10B
+    source: https://huggingface.co/Qwen/Qwen3.5-122B-A10B
+    checked: 2026-10-22
+  qwen3.5-397b-a17b:
+    name: Qwen3.5 397B A17B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3.5-397B-A17B
+    source: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+    checked: 2026-10-22
+  qwen3.6-35b-a3b:
+    name: Qwen3.6 35B A3B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3.6-35B-A3B
+    source: https://huggingface.co/Qwen/Qwen3.6-35B-A3B
+    checked: 2026-10-22
+  qwen3.8-27b:
+    name: Qwen3.8 27B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3.8-27B
+    source: https://huggingface.co/Qwen/Qwen3.8-27B
+    checked: 2026-10-22
+  qwen3-embedding-4b:
+    name: Qwen3 Embedding 4B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-Embedding-4B
+    source: https://huggingface.co/Qwen/Qwen3-Embedding-4B
+    checked: 2026-10-22
+  qwen3-embedding-8b:
+    name: Qwen3 Embedding 8B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-Embedding-8B
+    source: https://huggingface.co/Qwen/Qwen3-Embedding-8B
+    checked: 2026-10-22
+  qwen3-reranker-0.6b:
+    name: Qwen3 Reranker 0.6B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-Reranker-0.6B
+    source: https://huggingface.co/Qwen/Qwen3-Reranker-0.6B
+    checked: 2026-10-22
+  qwen3-reranker-4b:
+    name: Qwen3 Reranker 4B
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen3-Reranker-4B
+    source: https://huggingface.co/Qwen/Qwen3-Reranker-4B
+    checked: 2026-10-22
+  qwen-image-2512:
+    name: Qwen-Image 2512
+    license: Apache-2.0
+    open_weights: true
+    hf: Qwen/Qwen-Image-2512
+    source: https://huggingface.co/Qwen/Qwen-Image-2512
+    checked: 2026-10-22

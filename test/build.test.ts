@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildOutputs, validateOutputs } from "../src/build.js";
+import { LabIndex } from "../src/labs.js";
 import { HardError } from "../src/model.js";
 import { Warnings, toAnnotation } from "../src/warnings.js";
 import { fixture, loadFixtureInputs } from "./helpers.js";
@@ -97,7 +98,7 @@ describe("buildOutputs", () => {
 
   it("does not expect an output price from decision models", async () => {
     const { warnings } = await build();
-    expect(warnings.filter((w) => w.model === "metis")).toEqual([]);
+    expect(warnings.filter((w) => w.model === "metis" && w.code === "missing_price")).toEqual([]);
   });
 
   it("warns when the overlay disagrees, showing both values", async () => {
@@ -127,5 +128,106 @@ describe("buildOutputs", () => {
     const { pricing, catalog, inputs } = await build();
     pricing["GreenPT/green-l"] = { ...pricing["GreenPT/green-l"], input_cost_per_token: -1 };
     expect(() => validateOutputs({ pricing, catalog }, inputs.providers)).toThrow(HardError);
+  });
+});
+
+describe("model and provider facts", () => {
+  const model = (catalog: Awaited<ReturnType<typeof build>>["catalog"], provider: string, name: string) =>
+    catalog.models.find((m) => m.provider === provider && m.model === name)!;
+
+  it("maps hosted models to their lab's model and takes its facts from labs/", async () => {
+    const { catalog } = await build();
+    // Rebranded: models.dev's canonical id names the original.
+    const greenL = model(catalog, "greenpt", "green-l");
+    expect(greenL.canonical_id).toBe("mistral/mistral-small-2506");
+    expect(greenL.bifrost_id).toBe("GreenPT/green-l");
+    expect(greenL.info.lab).toMatchObject({ value: "mistral", source: "labs" });
+    expect(greenL.info.license).toMatchObject({ value: "Apache-2.0", url: "https://example.com/mistral-small" });
+    expect(greenL.info.name?.value).toBe("Mistral Small 3.2");
+    expect(greenL.info.tool_call).toMatchObject({ value: true, source: "models.dev" });
+    // The host is the lab: its alias maps to the same model.
+    expect(model(catalog, "mistral", "mistral-small-latest").canonical_id).toBe("mistral/mistral-small-2506");
+    // An <org>/<name> id: the org is a lab alias, the variant suffix is dropped.
+    expect(model(catalog, "infomaniak", "swiss-ai/Apertus-v1.5-70B").canonical_id).toBe("swiss-ai/apertus-v1.5-70b");
+  });
+
+  it("warns about models no lab claims, and lab models labs/ doesn't list", async () => {
+    const { warnings } = await build();
+    expect(warnings).toContainEqual(
+      expect.objectContaining({ code: "unattributed_model", provider: "regolo", model: "brick-v1-beta" }),
+    );
+    expect(warnings).toContainEqual(
+      expect.objectContaining({ code: "unknown_lab_model", provider: "infomaniak", model: "swiss-ai/Apertus-v1.5-70B" }),
+    );
+  });
+
+  it("lets the overlay set the canonical id and override model facts", async () => {
+    const { catalog } = await build((i) => {
+      i.overlay.regolo!["brick-v1-beta"] = {
+        canonical: "mistralai/Mistral-Large-2411",
+        open_weights: true,
+        source: "https://example.com/brick",
+        checked: "2026-10-01",
+      };
+    });
+    const brick = model(catalog, "regolo", "brick-v1-beta");
+    expect(brick.canonical_id).toBe("mistral/mistral-large-2411");
+    expect(brick.info.license?.value).toBe("Proprietary");
+    expect(brick.info.open_weights).toMatchObject({ value: true, source: "overlay" });
+  });
+
+  it("takes a missing license from Hugging Face and warns when the card disagrees", async () => {
+    const { catalog, warnings } = await build((i) => {
+      i.hfLicenses = new Map([
+        ["google/gemma-4-26b-a4b-it", "Apache-2.0"],
+        ["mistralai/Mistral-Small-3.2-24B-Instruct-2506", "MIT"],
+      ]);
+    });
+    expect(model(catalog, "greenpt", "gemma4").info.license).toMatchObject({
+      value: "Apache-2.0",
+      url: "https://huggingface.co/google/gemma-4-26b-a4b-it",
+    });
+    expect(catalog.labs.google?.models["gemma-4-26b-a4b-it"]?.license_url).toBe("https://huggingface.co/google/gemma-4-26b-a4b-it");
+    expect(warnings).toContainEqual(expect.objectContaining({ code: "license_mismatch", details: expect.objectContaining({ huggingface: "MIT" }) }));
+  });
+
+  it("publishes provider facts and labs without their aliases", async () => {
+    const { catalog } = await build();
+    expect(catalog.providers.infomaniak?.facts?.sustainability.heat_reuse?.value).toBe(true);
+    expect(catalog.providers.greenpt?.facts).toBeUndefined();
+    expect(catalog.labs.mistral).toMatchObject({ name: "Mistral AI", country: "FR", eu_ai_act: { value: "signatory" } });
+    expect(catalog.labs.mistral).not.toHaveProperty("aliases");
+    expect(catalog.labs.mistral?.models["mistral-small-2506"]).not.toHaveProperty("aliases");
+  });
+
+  it("warns about facts checked more than six months ago", async () => {
+    const { warnings } = await build((i) => (i.builtAt = "2026-07-11T05:00:00.000Z"));
+    const stale = warnings.filter((w) => w.code === "stale_fact");
+    expect(stale.map((w) => w.details)).toEqual([
+      { path: "privacy.training", checked: "2026-01-10" },
+      { lab: "mistral", path: "models.mistral-large-2411", checked: "2026-01-10" },
+    ]);
+    const { warnings: fresh } = await build((i) => (i.builtAt = "2026-07-09T05:00:00.000Z"));
+    expect(fresh.filter((w) => w.code === "stale_fact")).toEqual([]);
+  });
+});
+
+describe("LabIndex", () => {
+  const index = new LabIndex({
+    alibaba: {
+      name: "Alibaba",
+      country: "CN",
+      website: "https://qwen.ai",
+      aliases: ["Qwen"],
+      models: { "qwen3.5-122b-a10b": { name: "Qwen3.5 122B", aliases: ["qwen3.5-122b"], source: "https://x.y", checked: "2026-10-22" } },
+    },
+  });
+
+  it("resolves by exact keys and aliases only", () => {
+    expect(index.resolve({ model: "Qwen/Qwen3.5-122B-A10B-FP8" })).toMatchObject({ id: "alibaba/qwen3.5-122b-a10b", via: "model id" });
+    expect(index.resolve({ model: "qwen3.5-122b" })).toMatchObject({ id: "alibaba/qwen3.5-122b-a10b", via: "unique slug" });
+    expect(index.resolve({ model: "x", modelsDev: "alibaba/qwen3.5-122b-a10b" })?.via).toBe("models.dev");
+    expect(index.resolve({ model: "my-qwen3.5-122b" })).toBeUndefined();
+    expect(index.resolve({ model: "unknown-org/model" })).toBeUndefined();
   });
 });

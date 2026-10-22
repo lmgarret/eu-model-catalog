@@ -1,0 +1,32 @@
+name: Google
+country: US
+website: https://ai.google.dev/gemma
+logo: google
+color: '#4285f4'
+eu_ai_act:
+  value: signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+
+models:
+  gemma-3-27b-it:
+    name: Gemma 3 27B IT
+    license: Gemma Terms of Use
+    open_weights: true
+    hf: google/gemma-3-27b-it
+    source: https://ai.google.dev/gemma/terms
+    checked: 2026-10-22
+  gemma-4-26b-a4b-it:
+    name: Gemma 4 26B A4B IT
+    license: Apache-2.0
+    open_weights: true
+    hf: google/gemma-4-26B-A4B-it
+    source: https://ai.google.dev/gemma/docs/gemma_4_license
+    checked: 2026-10-22
+  gemma-4-31b-it:
+    name: Gemma 4 31B IT
+    license: Apache-2.0
+    open_weights: true
+    hf: google/gemma-4-31B-it
+    source: https://ai.google.dev/gemma/docs/gemma_4_license
+    checked: 2026-10-22

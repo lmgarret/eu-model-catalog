@@ -1,9 +1,10 @@
 import { type Catalog, type SourceState, catalogSchema } from "./catalog.js";
-import { PROVIDER_KEYS, type ProviderKey, type ProvidersConfig } from "./config.js";
+import type { ProvidersConfig } from "./config.js";
 import { fetchJson } from "./http.js";
 import { HardError, type ModelRecord, modelRecordSchema } from "./model.js";
 import { MODELS_DEV_URL, parseModelsDev } from "./sources/modelsdev.js";
-import { PROVIDER_APIS } from "./sources/providers/index.js";
+import { providerApi } from "./sources/providers/index.js";
+import type { ProviderApi } from "./sources/providers/types.js";
 import type { Warnings } from "./warnings.js";
 
 export type FetchOutcome =
@@ -13,7 +14,7 @@ export type FetchOutcome =
 export interface SourceSpec {
   id: string;
   kind: SourceState["kind"];
-  provider?: ProviderKey;
+  provider?: string;
 }
 
 /**
@@ -74,19 +75,19 @@ async function attempt(run: () => Promise<ModelRecord[]>, fetchedAt: string): Pr
 }
 
 async function fetchProviderApi(
-  provider: ProviderKey,
+  api: ProviderApi,
   providers: ProvidersConfig,
   env: NodeJS.ProcessEnv,
   fetchedAt: string,
 ): Promise<FetchOutcome> {
-  const api = PROVIDER_APIS[provider];
+  const provider = api.provider;
   const key = api.auth && env[api.auth.env];
   if (api.auth?.required && !key) {
     return { ok: false, skipped: true, error: `${api.auth.env} is not set` };
   }
   const headers: Record<string, string> = key ? { authorization: `Bearer ${key}` } : {};
   return attempt(
-    async () => api.parse(await fetchJson(api.url, headers), { config: providers[provider], fetchedAt }),
+    async () => api.parse(await fetchJson(api.url, headers), { config: providers[provider]!, fetchedAt }),
     fetchedAt,
   );
 }
@@ -104,10 +105,10 @@ export async function collectSources(
       { id: "models.dev", kind: "models.dev" },
       attempt(async () => parseModelsDev(await fetchJson(MODELS_DEV_URL), providers, fetchedAt), fetchedAt),
     ],
-    ...PROVIDER_KEYS.map((p): [SourceSpec, Promise<FetchOutcome>] => [
-      { id: `api:${p}`, kind: "api", provider: p },
-      fetchProviderApi(p, providers, env, fetchedAt),
-    ]),
+    ...Object.keys(providers).flatMap((p): [SourceSpec, Promise<FetchOutcome>][] => {
+      const api = providerApi(p);
+      return api ? [[{ id: `api:${p}`, kind: "api", provider: p }, fetchProviderApi(api, providers, env, fetchedAt)]] : [];
+    }),
   ];
   const outcomes = await Promise.all(jobs.map(([, job]) => job));
   return jobs.map(([spec], i) => resolveSource(spec, outcomes[i]!, previous, warnings));

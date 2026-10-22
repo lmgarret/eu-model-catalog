@@ -129,7 +129,7 @@ Outputs (in the site's static folder):
 
 ## Site
 
-SvelteKit with `adapter-static`, base path `/eu-model-catalog`. It reads `catalog.json` only, so the site and `pricing.json` can't disagree.
+Svelte 5 with plain Vite (one page, so no SvelteKit), relative base path. It fetches `catalog.json` at runtime, so the site and `pricing.json` can't disagree.
 
 - One table with sortable, filterable columns:
   - provider and model
@@ -142,6 +142,13 @@ SvelteKit with `adapter-static`, base path `/eu-model-catalog`. It reads `catalo
   - date last checked
 - A banner with build time, exchange rates and active warnings.
 - No backend, no analytics.
+- A provider table with scores and key facts; a page per provider (`#/providers/<id>`) with its maximum-privacy setup, score breakdown and fact sheet; a page per lab (`#/labs/<id>`).
+- Models grouped by canonical model; each group expands to its hosts, with each host's Bifrost model id to copy.
+
+**Scores.** Computed in the browser from the provider facts, so the rubric can change without a rebuild. Each criterion rates 0–1 and counts by its weight; unknown facts count as 0, and the coverage (share of weight backed by a fact) is shown next to the score. Privacy assumes the provider's maximum privacy reachable with self-serve steps; steps on request or for enterprise contracts are shown but not counted. Users can change the weights.
+
+- Privacy: training on data (25), retention (20), ZDR (10), DPA (10), European legal entity (15), no US parent (15), European regions (5).
+- Eco: renewable share × backing (35; certificates only count half), PUE (25), heat reuse (20), published CO₂ figure (10), ISO 14001/50001 (10).
 
 ## Phases
 
@@ -151,8 +158,8 @@ SvelteKit with `adapter-static`, base path `/eu-model-catalog`. It reads `catalo
    - `pricing.json`
    - unit tests (fixtures in, `pricing.json` snapshot out)
    - Actions and Pages deploy (a placeholder `index.html` is fine)
-2. **Site:** the Svelte table.
-3. **Provider facts:** `providers/<provider>.yaml`, shown on the site and never in `pricing.json`. Every claim has a `source` URL and a `checked` date. The site labels them as provider claims and flags entries checked more than 6 months ago. Start with:
+2. **Site:** the Svelte table. *Done.*
+3. **Provider facts:** *Done, including the optional fields below, a maximum-privacy setup per provider, and AI labs (`labs/`) for model origin and license.* `providers/<provider>.yaml`, shown on the site and never in `pricing.json`. Every claim has a `source` URL and a `checked` date. The site labels them as provider claims and flags entries checked more than 6 months ago. Start with:
    - regions, legal entity country, parent company country (US CLOUD Act exposure)
    - data retention, zero-data-retention option, training on customer data
    - renewable energy share (contracts vs certificates)

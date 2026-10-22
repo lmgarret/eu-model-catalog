@@ -5,6 +5,10 @@ export const WARNING_CODES = [
   "source_skipped",
   "stale_data",
   "overlay_unlisted",
+  "stale_fact",
+  "unattributed_model",
+  "unknown_lab_model",
+  "license_mismatch",
 ] as const;
 export type WarningCode = (typeof WARNING_CODES)[number];
 

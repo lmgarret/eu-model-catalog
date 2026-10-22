@@ -9,3 +9,25 @@ faster-whisper-large-v3:
   mode: audio_transcription
   source: https://regolo.ai/pricing
   checked: 2026-10-22
+
+# Models no other source maps to their lab.
+clef-flash:
+  canonical: cloudflare/clef-flash
+  source: https://regolo.ai/models
+  checked: 2026-10-22
+
+brick-v1-beta:
+  canonical: regolo/brick-v1-beta
+  source: https://regolo.ai/models
+  checked: 2026-10-22
+
+brick-complexity-pro:
+  canonical: regolo/brick-complexity-pro
+  source: https://regolo.ai/models
+  checked: 2026-10-22
+
+# Regolo describes it as the updated (2512) Qwen-Image.
+Qwen-Image:
+  canonical: alibaba/qwen-image-2512
+  source: https://regolo.ai/models
+  checked: 2026-10-22

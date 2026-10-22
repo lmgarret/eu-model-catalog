@@ -1,4 +1,4 @@
-import type { ProviderConfig, ProviderKey } from "../../config.js";
+import type { ProviderConfig } from "../../config.js";
 import { type Currency, HardError, type ModelRecord } from "../../model.js";
 
 export interface ParseContext {
@@ -8,7 +8,7 @@ export interface ParseContext {
 
 /** A provider's pricing or model-listing API. */
 export interface ProviderApi {
-  provider: ProviderKey;
+  provider: string;
   url: string;
   /** Env var sent as a Bearer token. When `required` and unset, the module is skipped. */
   auth?: { env: string; required: boolean };
@@ -19,7 +19,7 @@ export interface ProviderApi {
 }
 
 /** Fails the build when an API's currency differs from the one pinned in providers.yaml. */
-export function checkCurrency(provider: ProviderKey, actual: Currency, config: ProviderConfig): void {
+export function checkCurrency(provider: string, actual: Currency, config: ProviderConfig): void {
   if (config.currency && config.currency !== actual) {
     throw new HardError(`${provider} API returned prices in ${actual}, but providers.yaml pins ${config.currency}`);
   }

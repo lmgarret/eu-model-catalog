@@ -1,0 +1,11 @@
+# Trimmed for tests. Not real data.
+name: Google
+country: US
+website: https://ai.google.dev
+models:
+  gemma-4-26b-a4b-it:
+    name: Gemma 4 26B A4B
+    open_weights: true
+    hf: google/gemma-4-26b-a4b-it
+    source: https://example.com/gemma
+    checked: 2026-10-22

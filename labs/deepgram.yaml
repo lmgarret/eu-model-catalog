@@ -1,0 +1,17 @@
+name: Deepgram
+country: US
+website: https://deepgram.com
+
+models:
+  nova-2:
+    name: Deepgram Nova-2
+    license: Proprietary
+    open_weights: false
+    source: https://greenpt.com/speech-to-text-api
+    checked: 2026-10-22
+  nova-3:
+    name: Deepgram Nova-3
+    license: Proprietary
+    open_weights: false
+    source: https://greenpt.com/speech-to-text-api
+    checked: 2026-10-22

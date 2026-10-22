@@ -1,0 +1,29 @@
+name: MiniMax
+country: CN
+website: https://www.minimax.io
+logo: minimax
+aliases: [MiniMaxAI]
+eu_ai_act:
+  value: not_signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+  note: Not on the European Commission's list of GPAI Code of Practice signatories (list updated 2026-10-07).
+
+models:
+  minimax-m2.5:
+    name: MiniMax-M2.5
+    license: Modified MIT
+    open_weights: true
+    hf: MiniMaxAI/MiniMax-M2.5
+    source: https://huggingface.co/MiniMaxAI/MiniMax-M2.5
+    checked: 2026-10-22
+  minimax-m3:
+    name: MiniMax-M3
+    license: MiniMax Community License
+    open_weights: true
+    hf: MiniMaxAI/MiniMax-M3
+    source: https://huggingface.co/MiniMaxAI/MiniMax-M3/blob/main/LICENSE
+    checked: 2026-10-22
+    note: >-
+      Commercial use requires attribution and notice to MiniMax, and prior authorization above
+      $20M yearly revenue. The Hugging Face card names it "minimax-community".

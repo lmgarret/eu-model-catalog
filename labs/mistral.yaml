@@ -1,0 +1,321 @@
+# One file per AI lab: labs/<lab>.yaml. The key matches models.dev's lab id where it has one.
+#
+# aliases: other prefixes meaning this lab in model ids (Hugging Face orgs...), case-insensitive.
+# models: keyed by the lab's canonical slug, lowercase. Hosted models resolve to <lab>/<slug>
+#   through, in order: overlay `canonical`, models.dev's canonical_model_id, the host being the
+#   lab (providers.yaml `lab`), an <org>/<name> model id, then a slug only one lab lists. Model
+#   keys and `aliases` are matched case-insensitively; quantization suffixes (-FP8...) are ignored.
+#   - license / open_weights: the weights' license; `hf` (Hugging Face repo) is checked at build time.
+#   - source / checked: where the facts come from and when they were last verified.
+#
+# Mistral models are keyed by their API id; aliases list the other API ids Mistral's model cards
+# give for the same model (e.g. -latest), plus models.dev and Hugging Face names.
+
+name: Mistral AI
+country: FR
+website: https://mistral.ai
+logo: mistral
+color: '#fa520f'
+aliases: [mistralai]
+eu_ai_act:
+  value: signatory
+  source: https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai
+  checked: 2026-10-22
+
+models:
+  # Generalist
+  mistral-large-4:
+    name: Mistral Large 4
+    aliases: [mistral-large-4-0]
+    source: https://docs.mistral.ai/models/model-cards/mistral-large-4-0
+    checked: 2026-10-22
+    note: Open weights announced, but the weights and their license aren't published yet.
+  mistral-large-2512:
+    name: Mistral Large 3
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Mistral-Large-3-675B-Instruct-2512
+    aliases: [mistral-large-latest, mistral-large-3, mistral-large-3-25-12]
+    source: https://docs.mistral.ai/models/model-cards/mistral-large-3-25-12
+    checked: 2026-10-22
+  mistral-large-2411:
+    name: Mistral Large 2.1
+    license: Mistral Research License
+    open_weights: true
+    hf: mistralai/Mistral-Large-Instruct-2411
+    source: https://huggingface.co/mistralai/Mistral-Large-Instruct-2411
+    checked: 2026-10-22
+    note: The Hugging Face card names it "mrl".
+  mistral-medium-2604:
+    name: Mistral Medium 3.5
+    license: Modified MIT
+    open_weights: true
+    hf: mistralai/Mistral-Medium-3.5-128B
+    aliases: [mistral-medium-latest, mistral-medium-3, mistral-medium-3-5, mistral-medium-3.5, mistral-medium-3-5-26-04, mistral-medium-3.5-128b]
+    source: https://docs.mistral.ai/models/model-cards/mistral-medium-3-5-26-04
+    checked: 2026-10-22
+    note: Not usable by companies above $20M monthly revenue without a commercial license.
+  mistral-medium-2508:
+    name: Mistral Medium 3.1
+    license: Proprietary
+    open_weights: false
+    source: https://docs.mistral.ai/models/model-cards/mistral-medium-3-1-25-08
+    checked: 2026-10-22
+  mistral-medium-2505:
+    name: Mistral Medium 3
+    license: Proprietary
+    open_weights: false
+    source: https://docs.mistral.ai/models/model-cards/mistral-medium-3-25-05
+    checked: 2026-10-22
+  mistral-small-2603:
+    name: Mistral Small 4
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Mistral-Small-4-119B-2603
+    aliases: [mistral-small-latest, mistral-small-4-0-26-03, mistral-small-4-119b, mistral-small-4-119b-2603]
+    source: https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03
+    checked: 2026-10-22
+  mistral-small-2506:
+    name: Mistral Small 3.2
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    aliases: [mistral-small-3.2-24b-instruct-2506]
+    source: https://docs.mistral.ai/models/model-cards/mistral-small-3-2-25-06
+    checked: 2026-10-22
+  ministral-14b-2512:
+    name: Ministral 3 14B
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Ministral-3-14B-Instruct-2512
+    aliases: [ministral-14b-latest, ministral-3-14b-2512, ministral-3-14b-25-12, ministral-3-14b-instruct-2512]
+    source: https://docs.mistral.ai/models/model-cards/ministral-3-14b-25-12
+    checked: 2026-10-22
+  ministral-8b-2512:
+    name: Ministral 3 8B
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Ministral-3-8B-Instruct-2512
+    aliases: [ministral-8b-latest, ministral-3-8b-2512, ministral-3-8b-25-12, ministral-3-8b-instruct-2512]
+    source: https://docs.mistral.ai/models/model-cards/ministral-3-8b-25-12
+    checked: 2026-10-22
+  ministral-3b-2512:
+    name: Ministral 3 3B
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Ministral-3-3B-Instruct-2512
+    aliases: [ministral-3b-latest, ministral-3-3b-2512, ministral-3-3b-25-12, ministral-3-3b-instruct-2512]
+    source: https://docs.mistral.ai/models/model-cards/ministral-3-3b-25-12
+    checked: 2026-10-22
+  open-mistral-nemo-2407:
+    name: Mistral Nemo 12B
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Mistral-Nemo-Instruct-2407
+    aliases: [open-mistral-nemo, mistral-nemo]
+    source: https://docs.mistral.ai/models/model-cards/mistral-nemo-12b-24-07
+    checked: 2026-10-22
+  pixtral-large-2411:
+    name: Pixtral Large
+    license: Mistral Research License
+    open_weights: true
+    hf: mistralai/Pixtral-Large-Instruct-2411
+    aliases: [pixtral-large-latest]
+    source: https://huggingface.co/mistralai/Pixtral-Large-Instruct-2411
+    checked: 2026-10-22
+    note: The Hugging Face card names it "mrl".
+  pixtral-12b-2409:
+    name: Pixtral 12B
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Pixtral-12B-2409
+    aliases: [pixtral-12b, pixtral-12b-latest]
+    source: https://docs.mistral.ai/models/model-cards/pixtral-12b-24-09
+    checked: 2026-10-22
+
+  # Reasoning
+  magistral-medium-2509:
+    name: Magistral Medium 1.2
+    license: Proprietary
+    open_weights: false
+    aliases: [magistral-medium-latest]
+    source: https://docs.mistral.ai/models/model-cards/magistral-medium-1-2-25-09
+    checked: 2026-10-22
+  magistral-small-2509:
+    name: Magistral Small 1.2
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Magistral-Small-2509
+    aliases: [magistral-small-latest]
+    source: https://docs.mistral.ai/models/model-cards/magistral-small-1-2-25-09
+    checked: 2026-10-22
+
+  # Code
+  codestral-2508:
+    name: Codestral 25.08
+    license: Proprietary
+    open_weights: false
+    aliases: [codestral-latest, codestral-25-08]
+    source: https://docs.mistral.ai/models/model-cards/codestral-25-08
+    checked: 2026-10-22
+  open-codestral-mamba:
+    name: Codestral Mamba 7B
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Mamba-Codestral-7B-v0.1
+    aliases: [codestral-mamba-latest, codestral-mamba-2407]
+    source: https://docs.mistral.ai/models/model-cards/codestral-mamba-7b-0-1
+    checked: 2026-10-22
+  devstral-2512:
+    name: Devstral 2
+    license: Modified MIT
+    open_weights: true
+    hf: mistralai/Devstral-2-123B-Instruct-2512
+    aliases: [devstral-latest, devstral-medium-latest, devstral-2-25-12, devstral-2-123b-instruct-2512]
+    source: https://docs.mistral.ai/models/model-cards/devstral-2-25-12
+    checked: 2026-10-22
+    note: Not usable by companies above $20M monthly revenue without a commercial license.
+  devstral-medium-2507:
+    name: Devstral Medium 1.0
+    license: Proprietary
+    open_weights: false
+    source: https://docs.mistral.ai/models/model-cards/devstral-medium-1-0-25-07
+    checked: 2026-10-22
+  labs-devstral-small-2512:
+    name: Devstral Small 2
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Devstral-Small-2-24B-Instruct-2512
+    aliases: [devstral-small-latest, devstral-small-2512, devstral-small-2-24b-instruct-2512]
+    source: https://docs.mistral.ai/models/model-cards/devstral-small-2-25-12
+    checked: 2026-10-22
+  devstral-small-2507:
+    name: Devstral Small 1.1
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Devstral-Small-2507
+    source: https://docs.mistral.ai/models/model-cards/devstral-small-1-1-25-07
+    checked: 2026-10-22
+  devstral-small-2505:
+    name: Devstral Small 1.0
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Devstral-Small-2505
+    source: https://docs.mistral.ai/models/model-cards/devstral-small-1-0-25-05
+    checked: 2026-10-22
+  labs-leanstral-1-5:
+    name: Leanstral 1.5
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Leanstral-1.5-119B-A6B
+    aliases: [labs-leanstral-1-5-1, leanstral-1.5-119b-a6b]
+    source: https://docs.mistral.ai/models/model-cards/leanstral-1-5
+    checked: 2026-10-22
+    note: labs-leanstral-1-5-1 is assumed to serve the same model (models.dev names it Leanstral 1.5).
+
+  # Embeddings, OCR, moderation
+  codestral-embed-2505:
+    name: Codestral Embed
+    license: Proprietary
+    open_weights: false
+    aliases: [codestral-embed, codestral-embed-25-05]
+    source: https://docs.mistral.ai/models/model-cards/codestral-embed-25-05
+    checked: 2026-10-22
+  mistral-embed-2312:
+    name: Mistral Embed
+    license: Proprietary
+    open_weights: false
+    aliases: [mistral-embed, mistral-embed-23-12]
+    source: https://docs.mistral.ai/models/model-cards/mistral-embed-23-12
+    checked: 2026-10-22
+  mistral-ocr-4-1:
+    name: Mistral OCR 4.1
+    license: Proprietary
+    open_weights: false
+    aliases: [mistral-ocr-4, mistral-ocr-latest]
+    source: https://docs.mistral.ai/models/model-cards/ocr-4-1
+    checked: 2026-10-22
+  mistral-ocr-4-0:
+    name: Mistral OCR 4.0
+    license: Proprietary
+    open_weights: false
+    source: https://docs.mistral.ai/models/model-cards/ocr-4-0
+    checked: 2026-10-22
+  mistral-ocr-2512:
+    name: Mistral OCR 3
+    license: Proprietary
+    open_weights: false
+    aliases: [mistral-ocr-3, mistral-ocr-3-0, mistral-ocr-3-2512]
+    source: https://docs.mistral.ai/models/model-cards/ocr-3-25-12
+    checked: 2026-10-22
+  mistral-moderation-2603:
+    name: Mistral Moderation 2
+    license: Proprietary
+    open_weights: false
+    aliases: [mistral-moderation-latest]
+    source: https://docs.mistral.ai/models/model-cards/mistral-moderation-26-03
+    checked: 2026-10-22
+
+  # Audio
+  voxtral-small-2507:
+    name: Voxtral Small
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Voxtral-Small-24B-2507
+    aliases: [voxtral-small-latest, voxtral-small-25-07, voxtral-small-24b-2507]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-small-25-07
+    checked: 2026-10-22
+  voxtral-small-transcribe-3-0:
+    name: Voxtral Small Transcribe 3
+    license: Proprietary
+    open_weights: false
+    aliases: [voxtral-small-transcribe-3, voxtral-small-transcribe-latest, voxtral-small-3-0]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-small-transcribe-3-0
+    checked: 2026-10-22
+  voxtral-mini-2602:
+    name: Voxtral Mini Transcribe 2
+    license: Proprietary
+    open_weights: false
+    aliases: [voxtral-mini-latest, voxtral-mini-26-02]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-26-02
+    checked: 2026-10-22
+  voxtral-mini-transcribe-3-0:
+    name: Voxtral Mini Transcribe 3
+    license: Proprietary
+    open_weights: false
+    aliases: [voxtral-mini-transcribe-3, voxtral-mini-transcribe-latest, voxtral-mini-3-0]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-3-0
+    checked: 2026-10-22
+  voxtral-mini-transcribe-realtime-2602:
+    name: Voxtral Mini Transcribe Realtime
+    license: Apache-2.0
+    open_weights: true
+    hf: mistralai/Voxtral-Mini-4B-Realtime-2602
+    aliases: [voxtral-mini-realtime-2602, voxtral-mini-realtime-latest, voxtral-mini-realtime-26-02]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-realtime-26-02
+    checked: 2026-10-22
+  voxtral-mini-transcribe-realtime-3-0:
+    name: Voxtral Mini Transcribe Realtime 3
+    license: Proprietary
+    open_weights: false
+    aliases: [voxtral-mini-transcribe-realtime-3, voxtral-mini-transcribe-realtime-latest, voxtral-mini-realtime-3-0]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-mini-transcribe-realtime-3-0
+    checked: 2026-10-22
+  voxtral-mini-tts-2603:
+    name: Voxtral TTS
+    license: CC-BY-NC-4.0
+    open_weights: true
+    hf: mistralai/Voxtral-4B-TTS-2603
+    aliases: [voxtral-tts-26-03]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-tts-26-03
+    checked: 2026-10-22
+  voxtral-mini-tts-3-0:
+    name: Voxtral TTS 3
+    license: Proprietary
+    open_weights: false
+    aliases: [voxtral-mini-tts-3, voxtral-mini-tts-realtime-3-0, voxtral-mini-tts-realtime-3, voxtral-mini-tts-realtime-latest]
+    source: https://docs.mistral.ai/models/model-cards/voxtral-mini-tts-3-0
+    checked: 2026-10-22
+    note: >-
+      voxtral-mini-tts-latest isn't listed here: Mistral's cards give it both for this model and
+      for Voxtral TTS (2603), which have different licenses.

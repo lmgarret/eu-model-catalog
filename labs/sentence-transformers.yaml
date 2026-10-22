@@ -1,0 +1,13 @@
+name: Sentence Transformers (Hugging Face)
+country: US
+website: https://www.sbert.net
+logo: huggingface
+
+models:
+  all-minilm-l12-v2:
+    name: all-MiniLM-L12-v2
+    license: Apache-2.0
+    open_weights: true
+    hf: sentence-transformers/all-MiniLM-L12-v2
+    source: https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2
+    checked: 2026-10-22
