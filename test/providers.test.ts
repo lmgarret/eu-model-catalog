@@ -40,6 +40,13 @@ describe("greenpt", () => {
   });
 });
 
+describe("decision models", () => {
+  it("are billed on input only", () => {
+    const greenpt = PROVIDER_APIS.greenpt.parse(fixture("greenpt.json"), ctx());
+    expect(greenpt.find((r) => r.model === "metis")).toMatchObject({ mode: "chat", input_only: true });
+  });
+});
+
 describe("regolo", () => {
   const records = PROVIDER_APIS.regolo.parse(fixture("regolo.json"), ctx({ currency: "EUR" }));
 
@@ -71,6 +78,13 @@ describe("infomaniak (hand-written fixture)", () => {
       mode: "audio_transcription",
       prices: { input: "0.006" },
     });
+  });
+
+  it("rescales prices quoted per N tokens to per 1M tokens", () => {
+    const raw = fixture("infomaniak.handwritten.json") as { data: { prices: { unit: unknown }[] }[] };
+    expect(raw.data[0]!.prices[0]!.unit).toEqual({ type: "tokens", amount: 10000 });
+    const records = PROVIDER_APIS.infomaniak.parse(raw, ctx(config));
+    expect(records[0]).toMatchObject({ unit: "1M_tokens", prices: { input: "0.7", output: "2.5" } });
   });
 
   it("fails hard on an unknown currency id", () => {

@@ -9,7 +9,7 @@ import {
   pricingSchema,
 } from "./catalog.js";
 import { PROVIDER_KEYS, type Overlay, type OverlayEntry, type ProviderKey, type ProvidersConfig } from "./config.js";
-import { HardError, MODES, type Mode, type ModelRecord, PRICE_KEYS, type SourceKind, SOURCES } from "./model.js";
+import { HardError, MODES, type Mode, type ModelRecord, PRICE_KEYS, type PriceKey, type SourceKind, SOURCES } from "./model.js";
 import {
   BIFROST_PRICE_FIELDS,
   type BifrostPriceField,
@@ -69,11 +69,25 @@ interface Group {
   maxInput: Partial<Record<SourceKind, Scalar<number>>>;
   maxOutput: Partial<Record<SourceKind, Scalar<number>>>;
   deprecation: Partial<Record<SourceKind, Scalar<string>>>;
+  /** Price keys some source gives a value for, in any unit. */
+  priced: Set<PriceKey>;
+  /** Sources that list the model with a 0 or missing price, per price key. */
+  unpricedBy: Partial<Record<PriceKey, SourceKind[]>>;
+  inputOnly: boolean;
 }
 
 const PRECEDENCE: readonly SourceKind[] = SOURCES;
 
 /** The unit each Bifrost price field is quoted in. */
+const FIELD_KEY: Record<BifrostPriceField, PriceKey> = {
+  input_cost_per_token: "input",
+  cache_read_input_token_cost: "cached_input",
+  output_cost_per_token: "output",
+  ocr_cost_per_page: "input",
+  input_cost_per_second: "input",
+  input_cost_per_character: "input",
+};
+
 const FIELD_UNIT: Record<BifrostPriceField, CatalogPrice["original"]["per"]> = {
   input_cost_per_token: "token",
   cache_read_input_token_cost: "token",
@@ -104,9 +118,9 @@ function overlayToRecord(provider: ProviderKey, model: string, e: OverlayEntry):
   };
 }
 
-/** Prices a model is expected to have: chat models are billed for output too. */
-function expectedPrices(mode: Mode | undefined): ("input" | "output")[] {
-  return mode === undefined || mode === "chat" ? ["input", "output"] : ["input"];
+/** Prices a model is expected to have: chat models are billed for output too, unless billed on input only. */
+function expectedPrices(mode: Mode | undefined, inputOnly: boolean): ("input" | "output")[] {
+  return (mode === undefined || mode === "chat") && !inputOnly ? ["input", "output"] : ["input"];
 }
 
 function describe(c: Candidate): string {
@@ -126,7 +140,17 @@ class ProviderMerge {
     const id = model.toLowerCase();
     let g = this.groups.get(id);
     if (!g) {
-      g = { names: {}, prices: {}, mode: {}, maxInput: {}, maxOutput: {}, deprecation: {} };
+      g = {
+        names: {},
+        prices: {},
+        mode: {},
+        maxInput: {},
+        maxOutput: {},
+        deprecation: {},
+        priced: new Set(),
+        unpricedBy: {},
+        inputOnly: false,
+      };
       this.groups.set(id, g);
     }
     return g;
@@ -140,6 +164,7 @@ class ProviderMerge {
     for (const field of BIFROST_PRICE_FIELDS) {
       const v = entry[field];
       if (typeof v === "number" && v > 0) {
+        g.priced.add(FIELD_KEY[field]);
         (g.prices[field] ??= {}).bifrost = {
           value: new Decimal(v),
           price: { amount: String(v), currency: "USD", per: FIELD_UNIT[field] },
@@ -168,6 +193,7 @@ class ProviderMerge {
       if (amount === undefined) continue;
       const field = bifrostField(r.unit, key);
       if (!field) continue;
+      g.priced.add(key);
       (g.prices[field] ??= {})[s] = {
         value: toUsdPerUnit(amount, r.currency, r.unit, this.rates),
         price: { amount, currency: r.currency, per: r.unit },
@@ -180,17 +206,31 @@ class ProviderMerge {
     if (r.limits.max_output_tokens) g.maxOutput[s] = { value: r.limits.max_output_tokens, ...prov };
     if (r.deprecation_date) g.deprecation[s] = { value: r.deprecation_date, ...prov };
 
+    if (r.input_only) g.inputOnly = true;
+
     if (checkPrices && r.source !== "overlay") {
-      for (const key of expectedPrices(r.mode)) {
-        if (r.prices[key] === undefined) {
-          this.warnings.add({
-            code: "missing_price",
-            provider: this.provider,
-            model: r.model,
-            message: `${r.source} lists no ${key} price (0 or missing) for ${this.provider}/${r.model}; treated as missing`,
-            details: { source: r.source, price: key },
-          });
-        }
+      for (const key of ["input", "output"] as const) {
+        if (r.prices[key] === undefined) (g.unpricedBy[key] ??= []).push(r.source);
+      }
+    }
+  }
+
+  /**
+   * Warns once per model and price when a source lists a 0 or missing price (treated as missing,
+   * never free) and no other source fills it in.
+   */
+  checkMissing(): void {
+    for (const { group: g, name } of this.merged()) {
+      for (const key of expectedPrices(winner(g.mode)?.value, g.inputOnly)) {
+        const sources = g.unpricedBy[key];
+        if (!sources?.length || g.priced.has(key)) continue;
+        this.warnings.add({
+          code: "missing_price",
+          provider: this.provider,
+          model: name,
+          message: `${this.provider}/${name} has no ${key} price: ${sources.join(" and ")} ${sources.length > 1 ? "list" : "lists"} 0 or none, and no other source has one`,
+          details: { price: key, sources },
+        });
       }
     }
   }
@@ -276,6 +316,7 @@ export function buildOutputs(inputs: BuildInputs, warnings: Warnings): BuildOutp
       merge.addRecord(overlayToRecord(provider, model, entry), false);
     }
     merge.checkOverlay();
+    merge.checkMissing();
     const api = inputs.sources.find((s) => s.kind === "api" && s.provider === provider);
     if (api?.status === "ok") merge.checkListed(new Set(api.records.map((r) => r.model.toLowerCase())));
 
