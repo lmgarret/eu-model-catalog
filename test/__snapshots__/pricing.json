@@ -28,8 +28,8 @@
     "provider": "bedrock",
     "base_model": "j2-mid-v1"
   },
-  "greenpt/gemma4": {
-    "provider": "greenpt",
+  "GreenPT/gemma4": {
+    "provider": "GreenPT",
     "base_model": "gemma4",
     "mode": "chat",
     "input_cost_per_token": 5.617e-7,
@@ -38,16 +38,16 @@
     "max_output_tokens": 32000,
     "source": "https://api.greenpt.ai/v1/pricing"
   },
-  "greenpt/green-embedding": {
-    "provider": "greenpt",
+  "GreenPT/green-embedding": {
+    "provider": "GreenPT",
     "base_model": "green-embedding",
     "mode": "embedding",
     "input_cost_per_token": 2.2468e-7,
     "max_input_tokens": 32000,
     "source": "https://api.greenpt.ai/v1/pricing"
   },
-  "greenpt/green-l": {
-    "provider": "greenpt",
+  "GreenPT/green-l": {
+    "provider": "GreenPT",
     "base_model": "green-l",
     "mode": "chat",
     "input_cost_per_token": 2.8085e-7,
@@ -56,24 +56,24 @@
     "max_output_tokens": 32000,
     "source": "https://api.greenpt.ai/v1/pricing"
   },
-  "greenpt/green-s": {
-    "provider": "greenpt",
+  "GreenPT/green-s": {
+    "provider": "GreenPT",
     "base_model": "green-s",
     "mode": "audio_transcription",
     "input_cost_per_second": 0.0000717727777778,
     "max_output_tokens": 8192,
     "source": "https://docs.greenpt.ai/docs/pricing"
   },
-  "greenpt/metis": {
-    "provider": "greenpt",
+  "GreenPT/metis": {
+    "provider": "GreenPT",
     "base_model": "metis",
     "mode": "chat",
     "input_cost_per_token": 1.34808e-7,
     "max_input_tokens": 32768,
     "source": "https://api.greenpt.ai/v1/pricing"
   },
-  "regolo/apertus-70b": {
-    "provider": "regolo",
+  "Regolo.ai/apertus-70b": {
+    "provider": "Regolo.ai",
     "base_model": "apertus-70b",
     "mode": "chat",
     "input_cost_per_token": 4.4936e-7,
@@ -82,8 +82,8 @@
     "max_output_tokens": 30000,
     "source": "https://api.regolo.ai/model_group/info"
   },
-  "regolo/faster-whisper-large-v3": {
-    "provider": "regolo",
+  "Regolo.ai/faster-whisper-large-v3": {
+    "provider": "Regolo.ai",
     "base_model": "faster-whisper-large-v3",
     "mode": "audio_transcription",
     "input_cost_per_second": 0.00016851,
@@ -91,8 +91,8 @@
     "max_output_tokens": 4096,
     "source": "https://regolo.ai/pricing"
   },
-  "infomaniak/mistralai/Mistral-Small-4-119B-2603": {
-    "provider": "infomaniak",
+  "Infomaniak/mistralai/Mistral-Small-4-119B-2603": {
+    "provider": "Infomaniak",
     "base_model": "mistralai/Mistral-Small-4-119B-2603",
     "mode": "chat",
     "input_cost_per_token": 2.42739844425e-7,
@@ -100,8 +100,8 @@
     "max_input_tokens": 256000,
     "source": "https://api.infomaniak.com/1/ai/models"
   },
-  "infomaniak/swiss-ai/Apertus-v1.5-70B": {
-    "provider": "infomaniak",
+  "Infomaniak/swiss-ai/Apertus-v1.5-70B": {
+    "provider": "Infomaniak",
     "base_model": "swiss-ai/Apertus-v1.5-70B",
     "mode": "chat",
     "input_cost_per_token": 8.49589455488e-7,
@@ -110,8 +110,8 @@
     "max_output_tokens": 8192,
     "source": "https://www.infomaniak.com/en/hosting/ai-tools/prices"
   },
-  "infomaniak/whisper": {
-    "provider": "infomaniak",
+  "Infomaniak/whisper": {
+    "provider": "Infomaniak",
     "base_model": "whisper",
     "mode": "audio_transcription",
     "input_cost_per_second": 0.000121369922213,

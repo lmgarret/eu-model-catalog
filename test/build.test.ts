@@ -55,12 +55,12 @@ describe("buildOutputs", () => {
       supports_vision: true,
       input_cost_per_token: 1.5e-7,
     });
-    expect(pricing["infomaniak/swiss-ai/Apertus-v1.5-70B"]).toMatchObject({ provider: "infomaniak", mode: "chat" });
+    expect(pricing["Infomaniak/swiss-ai/Apertus-v1.5-70B"]).toMatchObject({ provider: "Infomaniak", mode: "chat" });
   });
 
   it("leaves unpriced models out of pricing.json", async () => {
     const { pricing, catalog } = await build();
-    expect(pricing).not.toHaveProperty(["regolo/brick-v1-beta"]);
+    expect(pricing).not.toHaveProperty(["Regolo.ai/brick-v1-beta"]);
     expect(catalog.models.find((m) => m.model === "brick-v1-beta")?.pricing_key).toBeNull();
   });
 
@@ -106,7 +106,7 @@ describe("buildOutputs", () => {
 
   it("fails hard when the output breaks its schema", async () => {
     const { pricing, catalog, inputs } = await build();
-    pricing["greenpt/green-l"] = { ...pricing["greenpt/green-l"], input_cost_per_token: -1 };
+    pricing["GreenPT/green-l"] = { ...pricing["GreenPT/green-l"], input_cost_per_token: -1 };
     expect(() => validateOutputs({ pricing, catalog }, inputs.providers)).toThrow(HardError);
   });
 });
