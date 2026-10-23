@@ -100,7 +100,7 @@
   </button>
 {/snippet}
 
-<Table.Root class="min-w-[58.5rem] table-fixed">
+<Table.Root class="min-w-[66rem] table-fixed">
   <Table.Header>
     <Table.Row class="hover:bg-transparent">
       {#each COLUMNS as c, i (i)}
