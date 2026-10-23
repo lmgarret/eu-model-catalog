@@ -112,7 +112,7 @@
       {#await import("./pages/ComparePage.svelte")}
         <p class="text-muted-foreground mt-10 text-center">Loading…</p>
       {:then { default: ComparePage }}
-        {#key app.route.ids.join(",")}<ComparePage ids={app.route.ids} />{/key}
+        <ComparePage ids={app.route.ids} />
       {/await}
     {:else if app.route.page === "providers"}
       <ProvidersPage />
