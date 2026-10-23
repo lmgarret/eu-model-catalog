@@ -1,4 +1,4 @@
-import type { Catalog, CatalogModel } from "./types.js";
+import type { Catalog, CatalogModel, Scores } from "./types.js";
 
 export interface OtherPrice {
   /** USD per `per`. */
@@ -47,6 +47,8 @@ export interface ModelGroup {
   reasoning?: boolean;
   vision?: boolean;
   audio?: boolean;
+  /** Benchmark scores of the lab's model. */
+  scores?: Scores;
   offers: Offer[];
 }
 
@@ -107,6 +109,7 @@ export function groupModels(catalog: Catalog, offers: Offer[]): ModelGroup[] {
         openWeights: labModel?.open_weights,
         knowledge: labModel?.knowledge_cutoff,
         released: labModel?.release_date,
+        scores: labModel?.scores,
         offers: [],
       };
       groups.set(key, g);

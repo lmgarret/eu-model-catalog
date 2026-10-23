@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { type BenchmarkFetch, type SourceScores, matchBenchmarks } from "./benchmarks.js";
 import { buildOutputs } from "./build.js";
 import { collectSources, fetchPreviousCatalog } from "./collect.js";
 import { loadOverlay, loadProviders } from "./config.js";
@@ -10,10 +11,19 @@ import { HardError } from "./model.js";
 import type { Rates } from "./money.js";
 import { BIFROST_DATASHEET_URL, parseDatasheet } from "./sources/bifrost.js";
 import { fetchEcb } from "./sources/ecb.js";
+import { fetchEpoch } from "./sources/epoch.js";
 import { fetchHfLicenses } from "./sources/huggingface.js";
+import { fetchLmarena } from "./sources/lmarena.js";
 import { Warnings, toAnnotation } from "./warnings.js";
 
 const PAGES_URL = "https://lmgarret.github.io/eu-model-catalog";
+
+function benchmarkFetch(run: () => Promise<SourceScores>, fetchedAt: string): Promise<BenchmarkFetch> {
+  return run().then(
+    (scores) => ({ ok: true, scores, fetched_at: fetchedAt }),
+    (err: unknown) => ({ ok: false, error: err instanceof Error ? err.message : String(err) }),
+  );
+}
 
 async function main(): Promise<void> {
   const { values } = parseArgs({
@@ -36,7 +46,7 @@ async function main(): Promise<void> {
   const previous = await fetchPreviousCatalog(values.previous);
   console.log(previous.note);
 
-  const [datasheet, rates, sources, hf] = await Promise.all([
+  const [datasheet, rates, sources, hf, epoch, lmarena] = await Promise.all([
     fetchJson(BIFROST_DATASHEET_URL).then(
       (raw) => parseDatasheet(raw),
       (err: unknown) => {
@@ -51,6 +61,8 @@ async function main(): Promise<void> {
     }),
     collectSources(providers, process.env, builtAt, previous.catalog, warnings),
     fetchHfLicenses(hfRepos),
+    benchmarkFetch(fetchEpoch, builtAt),
+    benchmarkFetch(fetchLmarena, builtAt),
   ]);
   if (hf.failed.length) {
     warnings.add({
@@ -59,8 +71,10 @@ async function main(): Promise<void> {
     });
   }
 
+  const benchmarks = matchBenchmarks(labs, { epoch, lmarena }, previous.catalog, warnings);
+
   const { pricing, catalog } = buildOutputs(
-    { builtAt, providers, overlay, facts, labs, hfLicenses: hf.licenses, datasheet, rates, sources },
+    { builtAt, providers, overlay, facts, labs, hfLicenses: hf.licenses, benchmarks, datasheet, rates, sources },
     warnings,
   );
 

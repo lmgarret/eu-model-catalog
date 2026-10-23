@@ -15,6 +15,7 @@ models:
     open_weights: true
     hf: mistralai/Mistral-Small-3.2-24B-Instruct-2506
     aliases: [mistral-small-latest]
+    lmarena: Mistral Small 3.2 (2506)
     source: https://example.com/mistral-small
     checked: 2026-10-22
   mistral-large-2411:

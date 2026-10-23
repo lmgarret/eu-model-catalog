@@ -9,6 +9,7 @@ export const WARNING_CODES = [
   "unattributed_model",
   "unknown_lab_model",
   "license_mismatch",
+  "unknown_benchmark_model",
 ] as const;
 export type WarningCode = (typeof WARNING_CODES)[number];
 

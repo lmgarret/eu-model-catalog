@@ -9,6 +9,7 @@ import {
   catalogSchema,
   pricingSchema,
 } from "./catalog.js";
+import type { Scores } from "./benchmarks.js";
 import type { Overlay, OverlayEntry, ProvidersConfig } from "./config.js";
 import { type Labs, type ProvidersFacts, claimsOf, isStale } from "./facts.js";
 import { LabIndex } from "./labs.js";
@@ -53,6 +54,8 @@ export interface BuildInputs {
   labs: Labs;
   /** License per Hugging Face repo, for lab models with `hf`. Missing repos weren't fetched. */
   hfLicenses: Map<string, string | undefined>;
+  /** Benchmark scores per canonical id, already matched and resolved against the previous catalog. */
+  benchmarks: Record<string, Scores>;
   datasheet: Datasheet;
   rates: Rates;
   /** models.dev and provider API states, already resolved against the previous catalog. */
@@ -556,9 +559,17 @@ export function buildOutputs(inputs: BuildInputs, warnings: Warnings): BuildOutp
         {
           ...lab,
           models: Object.fromEntries(
-            Object.entries(labModels).map(([slug, { aliases, ...m }]) => {
+            Object.entries(labModels).map(([slug, { aliases, epoch, lmarena, ...m }]) => {
               const license = licenses.get(`${k}/${slug}`);
-              return [slug, { ...m, ...(license && { license: license.value, ...(license.url !== m.source && { license_url: license.url }) }) }];
+              const scores = inputs.benchmarks[`${k}/${slug}`];
+              return [
+                slug,
+                {
+                  ...m,
+                  ...(license && { license: license.value, ...(license.url !== m.source && { license_url: license.url }) }),
+                  ...(scores && { scores }),
+                },
+              ];
             }),
           ),
         },

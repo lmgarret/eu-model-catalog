@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { scoresSchema } from "./benchmarks.js";
 import { labModelSchema, labSchema, providerFactsSchema } from "./facts.js";
 import { CURRENCIES, MODES, SOURCES, UNITS, isoDate, type ModelInfo, modelRecordSchema } from "./model.js";
 import { BIFROST_PRICE_FIELDS } from "./money.js";
@@ -110,9 +111,11 @@ export const catalogSchema = z.object({
       labSchema.omit({ aliases: true, models: true }).extend({
         models: z.record(
           z.string(),
-          labModelSchema.omit({ aliases: true }).extend({
+          labModelSchema.omit({ aliases: true, epoch: true, lmarena: true }).extend({
             /** Set when the license comes from the Hugging Face model card. */
             license_url: z.string().optional(),
+            /** Benchmark scores; each names the model as its source does. */
+            scores: scoresSchema.optional(),
           }),
         ),
       }),

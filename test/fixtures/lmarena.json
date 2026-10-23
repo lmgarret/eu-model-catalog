@@ -1,0 +1,34 @@
+[
+  {
+    "model_name": "Gemma 4 26B A4B",
+    "category": "overall",
+    "rating": 1437.499580632617,
+    "rating_lower": 1430.0604163375413,
+    "rating_upper": 1444.9387449276926,
+    "vote_count": 6092.0
+  },
+  {
+    "model_name": "Mistral Small 3.2 (2506)",
+    "category": "overall",
+    "rating": 1356.0157683444177,
+    "rating_lower": 1350.79162943229,
+    "rating_upper": 1361.2399072565452,
+    "vote_count": 17454.0
+  },
+  {
+    "model_name": "Gemma 4 26B A4B",
+    "category": "coding",
+    "rating": 1482.4832051650733,
+    "rating_lower": 1467.7327776424243,
+    "rating_upper": 1497.233632687722,
+    "vote_count": 1443.0
+  },
+  {
+    "model_name": "Mistral Small 3.2 (2506)",
+    "category": "coding",
+    "rating": 1411.2840383987786,
+    "rating_lower": 1401.2597505798367,
+    "rating_upper": 1421.3083262177206,
+    "vote_count": 3337.0
+  }
+]

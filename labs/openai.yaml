@@ -13,6 +13,8 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: openai/gpt-oss-120b
+    epoch: gpt-oss-120b
+    lmarena: gpt-oss-120b
     source: https://huggingface.co/openai/gpt-oss-120b
     checked: 2026-10-22
   gpt-oss-20b:
@@ -20,6 +22,8 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: openai/gpt-oss-20b
+    epoch: gpt-oss-20b
+    lmarena: gpt-oss-20b
     source: https://huggingface.co/openai/gpt-oss-20b
     checked: 2026-10-22
   whisper-large-v3:

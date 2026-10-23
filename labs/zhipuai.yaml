@@ -15,6 +15,8 @@ models:
     license: MIT
     open_weights: true
     hf: zai-org/GLM-5.1
+    epoch: GLM-5.1
+    lmarena: GLM-5.1
     source: https://huggingface.co/zai-org/GLM-5.1
     checked: 2026-10-22
   glm-5.2:
@@ -22,6 +24,8 @@ models:
     license: MIT
     open_weights: true
     hf: zai-org/GLM-5.2
+    epoch: GLM-5.2
+    lmarena: GLM-5.2 (Max)
     source: https://huggingface.co/zai-org/GLM-5.2
     checked: 2026-10-22
   glm-5.3:
@@ -29,6 +33,8 @@ models:
     license: GLM-5.3 License
     open_weights: true
     hf: zai-org/GLM-5.3
+    epoch: GLM-5.3
+    lmarena: GLM-5.3 (Max)
     source: https://huggingface.co/zai-org/GLM-5.3/blob/main/LICENSE
     checked: 2026-10-22
     note: >-
@@ -39,5 +45,7 @@ models:
     license: MIT
     open_weights: true
     hf: zai-org/GLM-5.3-Flash
+    epoch: GLM-5.3-Flash
+    lmarena: GLM-5.3-Flash
     source: https://huggingface.co/zai-org/GLM-5.3-Flash
     checked: 2026-10-22

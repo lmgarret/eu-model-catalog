@@ -1,0 +1,4 @@
+model_id,benchmark_id,performance,benchmark,benchmark_release_date,model,model_version,Model,date,source
+m132,b10,0.6698933782267117,GPQA diamond,2023-11-20,Gemma 4 26B A4B,gemma-4-26b-a4b-it_minimal,Gemma 4 26B A4B,2026-04-02,
+m132,b12,0.8220442664887109,OTIS Mock AIME 2024-2025,2024-12-19,Gemma 4 26B A4B,gemma-4-26b-a4b-it_minimal,Gemma 4 26B A4B,2026-04-02,
+m132,b12,0.5,OTIS Mock AIME 2024-2025,2024-12-19,Gemma 4 26B A4B,gemma-4-26b-a4b-it_low,Gemma 4 26B A4B,2026-04-02,

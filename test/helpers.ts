@@ -55,6 +55,7 @@ export async function loadFixtureInputs(): Promise<BuildInputs> {
     facts: await loadProviderFacts(path.join(FIXTURES, "providers"), Object.keys(providers)),
     labs: await loadLabs(path.join(FIXTURES, "labs")),
     hfLicenses: new Map(),
+    benchmarks: {},
     datasheet: parseDatasheet(fixture("bifrost-datasheet.json"), 0),
     rates: parseEcb(readFileSync(path.join(FIXTURES, "ecb.xml"), "utf8")),
     sources,

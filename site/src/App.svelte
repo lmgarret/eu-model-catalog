@@ -132,6 +132,9 @@
       <p>
         Prices are converted with ECB reference rates and may differ from your invoice. Provider facts are mostly the
         providers' own claims. Logos from <a class="underline" href="https://models.dev" target="_blank" rel="noreferrer">models.dev</a>.
+        Benchmarks from <a class="underline" href="https://epoch.ai/benchmarks" target="_blank" rel="noreferrer">Epoch AI</a> and
+        <a class="underline" href="https://lmarena.ai/leaderboard" target="_blank" rel="noreferrer">LMArena</a>, under
+        <a class="underline" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.
       </p>
     </footer>
   {/if}

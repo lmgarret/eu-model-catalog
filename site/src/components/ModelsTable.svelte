@@ -7,11 +7,16 @@
   import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
   import EyeIcon from "@lucide/svelte/icons/eye";
   import WrenchIcon from "@lucide/svelte/icons/wrench";
+  import { BENCHMARKS, BENCHMARK_INFO, SOURCES, benchmarkRanges, describeScore } from "$lib/benchmarks.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import { MODE_LABEL, date, fromUsd, money, tokens } from "$lib/format.js";
   import { type ModelGroup, compareBy, groupStats } from "$lib/models.js";
+  import { persisted } from "$lib/persisted.svelte.js";
   import { app, href } from "$lib/state.svelte.js";
+  import type { Benchmark } from "$lib/types.js";
+  import BenchmarkBar from "./BenchmarkBar.svelte";
   import CopyButton from "./CopyButton.svelte";
   import Logo from "./Logo.svelte";
   import OfferSources from "./OfferSources.svelte";
@@ -20,12 +25,15 @@
   /** `showLab` is off on a lab's own page, where every row has the same lab. */
   let { groups, showLab = true }: { groups: ModelGroup[]; showLab?: boolean } = $props();
 
-  type SortKey = "name" | "hosts" | "input" | "output" | "context" | "privacy" | "eco";
+  type SortKey = "name" | "hosts" | "input" | "output" | "bench" | "context" | "privacy" | "eco";
   let sort = $state<{ key: SortKey; dir: 1 | -1 }>({ key: "hosts", dir: -1 });
+  const bench = persisted<Benchmark>("benchmark", "capabilities");
   let open = $state<Set<string>>(new Set());
   let sources = $state<string | null>(null);
 
   const catalog = $derived(app.catalog!);
+  // Bars scale over every model, so filtering doesn't change them.
+  const ranges = $derived(benchmarkRanges(app.groups(app.offers)));
   const mixedModes = $derived(new Set(groups.map((g) => g.mode)).size > 1);
   const bestScore = (g: ModelGroup, kind: "privacy" | "eco") =>
     g.offers.map((o) => app.scores[o.provider]?.[kind]).filter((s) => s !== undefined).sort((a, b) => b.value - a.value)[0];
@@ -35,6 +43,7 @@
     hosts: (g) => g.offers.length,
     input: (g) => groupStats(g).input,
     output: (g) => groupStats(g).output,
+    bench: (g) => g.scores?.[bench.value]?.value,
     context: (g) => groupStats(g).context,
     privacy: (g) => bestScore(g, "privacy")?.value,
     eco: (g) => bestScore(g, "eco")?.value,
@@ -45,8 +54,13 @@
   );
 
   function sortBy(key: SortKey) {
-    const first = ["hosts", "privacy", "eco", "context"].includes(key) ? -1 : 1;
+    const first = ["hosts", "bench", "privacy", "eco", "context"].includes(key) ? -1 : 1;
     sort = sort.key === key ? { key, dir: sort.dir === 1 ? -1 : 1 } : { key, dir: first };
+  }
+
+  function pickBenchmark(b: Benchmark) {
+    bench.value = b;
+    sort = { key: "bench", dir: -1 };
   }
 
   function toggle(key: string) {
@@ -63,6 +77,7 @@
     { key: "hosts", label: "Hosts" },
     { key: "input", label: "Input /1M", class: "text-right", title: "Cheapest per 1M tokens, or per unit shown" },
     { key: "output", label: "Output /1M", class: "text-right", title: "Cheapest per 1M tokens" },
+    { key: "bench", label: "Benchmark", title: "Benchmark score of the lab's model, chat models only" },
     { key: "context", label: "Context", class: "text-right" },
     { label: "" },
     { key: "privacy", label: "Privacy", class: "text-center", title: "Best host's privacy score" },
@@ -77,19 +92,43 @@
   ] as const;
 </script>
 
+{#snippet sortButton(key: SortKey, label: string)}
+  <button class="hover:text-foreground inline-flex items-center gap-1 {sort.key === key ? 'text-foreground' : ''}" onclick={() => sortBy(key)}>
+    {label}
+    {#if sort.key === key}
+      {#if sort.dir === 1}<ArrowUpIcon class="size-3" />{:else}<ArrowDownIcon class="size-3" />{/if}
+    {/if}
+  </button>
+{/snippet}
+
 <Table.Root>
   <Table.Header>
     <Table.Row class="hover:bg-transparent">
       {#each COLUMNS as c, i (i)}
         <Table.Head class="text-muted-foreground h-10 px-3 text-xs font-medium {c.class ?? ''}" title={c.title}>
-          {#if c.key}
-            {@const key = c.key}
-            <button class="hover:text-foreground inline-flex items-center gap-1 {sort.key === key ? 'text-foreground' : ''}" onclick={() => sortBy(key)}>
-              {c.label}
-              {#if sort.key === key}
-                {#if sort.dir === 1}<ArrowUpIcon class="size-3" />{:else}<ArrowDownIcon class="size-3" />{/if}
-              {/if}
-            </button>
+          {#if c.key === "bench"}
+            <span class="inline-flex items-center gap-0.5">
+              {@render sortButton("bench", BENCHMARK_INFO[bench.value].label)}
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger class="hover:text-foreground rounded p-0.5" title="Pick a benchmark">
+                  <ChevronDownIcon class="size-3.5" />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="start" class="w-80">
+                  <DropdownMenu.RadioGroup value={bench.value} onValueChange={(v) => pickBenchmark(v as Benchmark)}>
+                    {#each BENCHMARKS as b (b)}
+                      <DropdownMenu.RadioItem value={b} closeOnSelect class="items-start">
+                        <div>
+                          <div class="font-medium">{BENCHMARK_INFO[b].label}</div>
+                          <div class="text-muted-foreground text-xs">{BENCHMARK_INFO[b].about}</div>
+                        </div>
+                      </DropdownMenu.RadioItem>
+                    {/each}
+                  </DropdownMenu.RadioGroup>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </span>
+          {:else if c.key}
+            {@render sortButton(c.key, c.label)}
           {:else}
             {c.label}
           {/if}
@@ -156,6 +195,11 @@
         <Table.Cell class="px-3 text-right font-mono text-[13px] tabular-nums">
           {#if stats.output !== undefined}{price(stats.output)}{:else}<span class="text-muted-foreground">–</span>{/if}
         </Table.Cell>
+        <Table.Cell class="px-3">
+          {#if g.scores?.[bench.value]}
+            <BenchmarkBar benchmark={bench.value} score={g.scores[bench.value]!} range={ranges[bench.value]} />
+          {:else if g.mode === "chat"}<span class="text-muted-foreground">–</span>{/if}
+        </Table.Cell>
         <Table.Cell class="px-3 text-right font-mono text-[13px] tabular-nums">{tokens(stats.context)}</Table.Cell>
         <Table.Cell class="px-3">
           <div class="text-muted-foreground/70 flex gap-2">
@@ -172,6 +216,30 @@
       </Table.Row>
 
       {#if isOpen}
+        {@const scored = BENCHMARKS.filter((b) => g.scores?.[b])}
+        {#if scored.length}
+          {@const sources = [...new Set(scored.map((b) => g.scores![b]!.source))]}
+          <Table.Row class="bg-muted/30 hover:bg-muted/30">
+            <Table.Cell colspan={COLUMNS.length + 1} class="px-3 py-2 whitespace-normal">
+              <div class="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-xs {showLab ? 'pl-10' : ''}">
+                {#each scored as b (b)}
+                  {@const s = g.scores![b]!}
+                  {@const fmt = BENCHMARK_INFO[b].format}
+                  <span title={describeScore(b, s)}>
+                    <span class="text-muted-foreground">{BENCHMARK_INFO[b].label}</span>
+                    <span class="font-mono text-[13px] tabular-nums {s.stale_since ? 'text-warn' : ''}">{fmt(s.value)}</span>
+                    {#if s.ci}<span class="text-muted-foreground font-mono tabular-nums">({fmt(s.ci[0])}–{fmt(s.ci[1])})</span>{/if}
+                  </span>
+                {/each}
+                <span class="text-muted-foreground">
+                  From
+                  {#each sources as src, i (src)}{i ? " and " : ""}<a class="underline" href={SOURCES[src].url} target="_blank" rel="noreferrer">{SOURCES[src].name}</a>{/each},
+                  for the lab's model: hosts may serve quantized weights.
+                </span>
+              </div>
+            </Table.Cell>
+          </Table.Row>
+        {/if}
         {#each g.offers as o (o.id)}
           {@const f = catalog.providers[o.provider]?.facts}
           {@const s = app.scores[o.provider]}
@@ -207,6 +275,7 @@
               {:else}<span class="text-muted-foreground">–</span>{/if}
             </Table.Cell>
             <Table.Cell class="px-3 text-right font-mono text-[13px] tabular-nums">{#if o.output !== undefined}{price(o.output)}{:else}<span class="text-muted-foreground">–</span>{/if}</Table.Cell>
+            <Table.Cell></Table.Cell>
             <Table.Cell class="px-3 text-right font-mono text-[13px] tabular-nums">
               {tokens(o.context)}
               {#if o.maxOutput}<div class="text-muted-foreground text-xs">{tokens(o.maxOutput)} <span class="font-sans">out</span></div>{/if}
