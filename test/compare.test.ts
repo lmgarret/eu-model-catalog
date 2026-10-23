@@ -177,6 +177,17 @@ describe("spec rows", () => {
     expect(row(rows, "Weights").differs).toBe(false);
   });
 
+  it("tags by the text shown, so values that read the same tie", async () => {
+    const { pick, ctx } = await fixture();
+    const withContext = (g: ModelGroup, context: number): ModelGroup => ({ ...g, offers: g.offers.map((o) => ({ ...o, context })) });
+    const [a, b, c] = pick("mistral/mistral-small-2506", "swiss-ai/apertus-70b", "mistral/mistral-embed");
+    const two = row(specRows([withContext(a!, 1_000_000), withContext(b!, 1_048_576)], ctx), "Context");
+    expect(two.cells.map((c) => c.text)).toEqual(["1M", "1M"]);
+    expect(two.cells.map((c) => c.best)).toEqual([false, false]);
+    const three = row(specRows([withContext(a!, 1_000_000), withContext(b!, 1_048_576), withContext(c!, 131_072)], ctx), "Context");
+    expect(three.cells.map((c) => c.best)).toEqual([true, true, false]);
+  });
+
   it("doesn't count a row of dashes as a difference", async () => {
     const { pick, ctx } = await fixture();
     const output = row(specRows(pick("greenpt/green-embedding", "mistral/mistral-embed"), ctx), "Output /1M");

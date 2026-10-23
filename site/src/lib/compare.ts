@@ -113,7 +113,10 @@ export function specRows(groups: readonly (ModelGroup | undefined)[], ctx: SpecC
   };
 
   const rows: SpecRow[] = [];
-  /** Adds a row; `value` feeds "best" when the row has a direction, `cell` gives the text and extras. */
+  /**
+   * Adds a row; `value` feeds "best" when the row has a direction, `cell` gives the text and extras.
+   * "Best" follows the text shown: a cell reading the same as a best one is tagged too, and none are when all read the same.
+   */
   function add(
     group: SpecRow["group"],
     label: string,
@@ -127,7 +130,10 @@ export function specRows(groups: readonly (ModelGroup | undefined)[], ctx: SpecC
       return { ...base, text: base.text || DASH, best: flags[i] ?? false };
     });
     const texts = cells.filter((_, i) => groups[i] !== undefined).map((c) => c.text);
-    rows.push({ group, label, cells, differs: texts.length >= 2 && new Set(texts).size > 1 });
+    const differs = texts.length >= 2 && new Set(texts).size > 1;
+    const bestTexts = new Set(cells.filter((c) => c.best).map((c) => c.text));
+    for (const [i, c] of cells.entries()) c.best = differs && groups[i] !== undefined && bestTexts.has(c.text);
+    rows.push({ group, label, cells, differs });
   }
 
   if (known.length && known.every((g) => g.mode === "chat")) {
