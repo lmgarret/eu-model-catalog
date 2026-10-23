@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildOutputs } from "../src/build.js";
 import { Warnings } from "../src/warnings.js";
-import { BENCHMARKS, BENCHMARK_INFO } from "../site/src/lib/benchmarks.js";
+import { BENCHMARKS, BENCHMARK_INFO, scoredOn } from "../site/src/lib/benchmarks.js";
 import { dodge, labelRows } from "../site/src/lib/beeswarm.js";
 import {
   type SpecContext,
@@ -204,5 +204,15 @@ describe("price scatter", () => {
       { name: "P", why: "no price" },
       { name: "S", why: "not rated" },
     ]);
+  });
+});
+
+describe("benchmark strips", () => {
+  it("lists the models scored on a benchmark, with the source's name for each", () => {
+    const scores = { coding: { name: "Model A (thinking)", value: 1400, percentile: 90 } } as ModelGroup["scores"];
+    const a = { key: "a", name: "A", mode: "chat", scores, offers: [] } as unknown as ModelGroup;
+    const b = { key: "b", name: "B", mode: "chat", offers: [] } as unknown as ModelGroup;
+    expect(scoredOn([a, b], "coding")).toEqual([{ key: "a", name: "A", source: "Model A (thinking)", value: 1400 }]);
+    expect(scoredOn([a, b], "math")).toEqual([]);
   });
 });

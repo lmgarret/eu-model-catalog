@@ -11,6 +11,7 @@
   import BrandMark from "./components/BrandMark.svelte";
   import PickTray from "./components/PickTray.svelte";
   import ScoringDialog from "./components/ScoringDialog.svelte";
+  import ComparePage from "./pages/ComparePage.svelte";
   import Home from "./pages/Home.svelte";
   import LabPage from "./pages/LabPage.svelte";
   import LabsPage from "./pages/LabsPage.svelte";
@@ -20,6 +21,8 @@
   import ProvidersPage from "./pages/ProvidersPage.svelte";
 
   let scoring = $state(false);
+  /** The site header's height; it wraps to two lines on phones. Sticky bars on the pages sit below it. */
+  let headerHeight = $state(60);
   /** The pick tray shows on the pages with a models table, once a pick is known. */
   const tray = $derived((app.route.page === "home" || app.route.page === "lab") && picks.groups.length > 0);
 
@@ -36,7 +39,7 @@
   );
 </script>
 
-<header class="bg-background/85 sticky top-0 z-20 backdrop-blur">
+<header class="bg-background/85 sticky top-0 z-20 backdrop-blur" bind:offsetHeight={headerHeight}>
   <!-- Wraps to two lines on phones instead of widening the page. -->
   <div class="mx-auto flex min-h-15 max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 py-2 sm:py-0">
     <div class="flex items-center gap-4 sm:gap-8">
@@ -92,7 +95,7 @@
 </header>
 
 <!-- Room for the tray, so it never covers the end of the list or the footer. -->
-<main class="mx-auto max-w-6xl px-6 {tray ? 'pb-24' : 'pb-16'}">
+<main class="mx-auto max-w-6xl px-6 {tray ? 'pb-24' : 'pb-16'}" style:--site-header="{headerHeight}px">
   {#if app.error}
     <p class="text-destructive mt-10 text-center">Couldn't load the catalog: {app.error}</p>
   {:else if !app.catalog}
@@ -105,6 +108,8 @@
       {#key app.route.id}<LabPage id={app.route.id} />{/key}
     {:else if app.route.page === "model"}
       {#key app.route.id}<ModelPage id={app.route.id} />{/key}
+    {:else if app.route.page === "compare"}
+      {#key app.route.ids.join(",")}<ComparePage ids={app.route.ids} />{/key}
     {:else if app.route.page === "providers"}
       <ProvidersPage />
     {:else if app.route.page === "labs"}

@@ -139,7 +139,7 @@
             <path d={stepPath} class="stroke-muted-foreground fill-none" stroke-width="1.5" stroke-dasharray="5 4" />
             {#each grey as d (d.key)}
               <a href={href.model(d.key)} aria-label={d.name} onclick={(e) => peek(e, { kind: "model", id: d.key })}
-                ><circle cx={sx(d.price)} cy={sy(d.score)} r="4" class="fill-foreground/55 stroke-card" stroke-width="1.5" /></a
+                ><circle cx={sx(d.price)} cy={sy(d.score)} r="4" class="fill-foreground/35 stroke-card" stroke-width="1.5" /></a
               >
             {/each}
             {#each lit as d (d.key)}
@@ -176,7 +176,7 @@
         {/snippet}
       </Chart>
       <div class="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 text-[11px]">
-        <span class="inline-flex items-center gap-1"><span class="bg-foreground/55 size-2 rounded-full"></span>In this catalog</span>
+        <span class="inline-flex items-center gap-1"><span class="bg-foreground/35 size-2 rounded-full"></span>In this catalog</span>
         <span class="inline-flex items-center gap-1"><span class="border-muted-foreground w-4 border-t-[1.5px] border-dashed"></span>Best value</span>
         <span>Output price per 1M tokens, cheapest host</span>
       </div>

@@ -1,6 +1,6 @@
 <!-- A chat model's benchmark scores, one card each, on its page (three columns) or in the side panel (stacked). -->
 <script lang="ts">
-  import { BENCHMARKS, BENCHMARK_INFO, SCALE, SOURCES, rankAmong } from "$lib/benchmarks.js";
+  import { BENCHMARKS, BENCHMARK_INFO, SCALE, SOURCES, rankAmong, scoredOn } from "$lib/benchmarks.js";
   import { ordinal } from "$lib/compare.js";
   import { date } from "$lib/format.js";
   import type { ModelGroup } from "$lib/models.js";
@@ -11,17 +11,7 @@
 
   const all = $derived(app.groups(app.offers));
   /** Per benchmark, the catalog's models with a score on it. */
-  const ours = $derived(
-    Object.fromEntries(
-      BENCHMARKS.map((b) => [
-        b,
-        all.flatMap((x) => {
-          const s = x.scores?.[b];
-          return s ? [{ key: x.key, name: x.name, source: s.name, value: s.value }] : [];
-        }),
-      ]),
-    ),
-  );
+  const ours = $derived(Object.fromEntries(BENCHMARKS.map((b) => [b, scoredOn(all, b)])));
 </script>
 
 <div class="grid gap-4 {compact ? '' : 'sm:grid-cols-3'}" title={SCALE}>

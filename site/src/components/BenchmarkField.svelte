@@ -121,7 +121,9 @@
             <line x1={context.xScale(d.value)} x2={context.xScale(d.value)} y1={guideTop(d.key!)} y2={2 * frame + 2} stroke={d.color} stroke-opacity="0.5" />
           {/each}
           {#each labels as l (l.key)}
-            <text x={l.x} y={-l.row * ROW - 5} text-anchor="middle" fill={l.color} class="text-[11px] font-medium">{l.text}</text>
+            <text x={l.x} y={-l.row * ROW - 5} text-anchor="middle" fill={l.color} class="stroke-card text-[11px] font-medium" stroke-width="3" paint-order="stroke"
+              >{l.text}</text
+            >
           {/each}
           {#each dots as d (d.key ?? `ref:${d.name}`)}
             {@const cx = context.xScale(d.value)}

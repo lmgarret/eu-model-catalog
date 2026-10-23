@@ -47,3 +47,11 @@ export function rankAmong(groups: ModelGroup[], g: ModelGroup, b: Benchmark): { 
   const scored = groups.flatMap((x) => (x.scores?.[b] ? [x.scores[b].value] : []));
   return { rank: scored.filter((v) => v > value).length + 1, of: scored.length };
 }
+
+/** The groups with a score on `b`, as the benchmark strips draw them; `source` is the source's name for the model. */
+export function scoredOn(groups: ModelGroup[], b: Benchmark): { key: string; name: string; source: string; value: number }[] {
+  return groups.flatMap((g) => {
+    const s = g.scores?.[b];
+    return s ? [{ key: g.key, name: g.name, source: s.name, value: s.value }] : [];
+  });
+}

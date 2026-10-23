@@ -13,6 +13,7 @@
   import BenchmarkCards from "../components/BenchmarkCards.svelte";
   import CopyButton from "../components/CopyButton.svelte";
   import Logo from "../components/Logo.svelte";
+  import ModelPicker from "../components/ModelPicker.svelte";
   import OfferSources from "../components/OfferSources.svelte";
   import ScoreBadge from "../components/ScoreBadge.svelte";
 
@@ -60,6 +61,9 @@
         {#if g.released}<span>Released {date(g.released)}</span>{/if}
         {#if labModel?.hf}<a class="hover:text-foreground" href="https://huggingface.co/{labModel.hf}" target="_blank" rel="noreferrer">Hugging Face ↗</a>{/if}
       </p>
+    </div>
+    <div class="ml-auto">
+      <ModelPicker mode={g.mode} exclude={[g.key]} label="Compare with…" onpick={(k) => (location.hash = href.compare([g.key, k]))} />
     </div>
   </header>
 
