@@ -11,7 +11,6 @@
   import BrandMark from "./components/BrandMark.svelte";
   import PickTray from "./components/PickTray.svelte";
   import ScoringDialog from "./components/ScoringDialog.svelte";
-  import ComparePage from "./pages/ComparePage.svelte";
   import Home from "./pages/Home.svelte";
   import LabPage from "./pages/LabPage.svelte";
   import LabsPage from "./pages/LabsPage.svelte";
@@ -109,7 +108,12 @@
     {:else if app.route.page === "model"}
       {#key app.route.id}<ModelPage id={app.route.id} />{/key}
     {:else if app.route.page === "compare"}
-      {#key app.route.ids.join(",")}<ComparePage ids={app.route.ids} />{/key}
+      <!-- Loaded on first visit, so Home doesn't download the charts. -->
+      {#await import("./pages/ComparePage.svelte")}
+        <p class="text-muted-foreground mt-10 text-center">Loading…</p>
+      {:then { default: ComparePage }}
+        {#key app.route.ids.join(",")}<ComparePage ids={app.route.ids} />{/key}
+      {/await}
     {:else if app.route.page === "providers"}
       <ProvidersPage />
     {:else if app.route.page === "labs"}

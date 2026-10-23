@@ -1,11 +1,16 @@
 <!-- A chat model's benchmark scores, one card each, on its page (three columns) or in the side panel (stacked). -->
+<script lang="ts" module>
+  let field: Promise<typeof import("./BenchmarkField.svelte")> | undefined;
+  /** The strips come with the chart library, fetched when the first cards show; one import for every card. */
+  const loadField = () => (field ??= import("./BenchmarkField.svelte"));
+</script>
+
 <script lang="ts">
   import { BENCHMARKS, BENCHMARK_INFO, SCALE, SOURCES, rankAmong, scoredOn } from "$lib/benchmarks.js";
   import { ordinal } from "$lib/compare.js";
   import { date } from "$lib/format.js";
   import type { ModelGroup } from "$lib/models.js";
   import { app } from "$lib/state.svelte.js";
-  import BenchmarkField from "./BenchmarkField.svelte";
 
   let { group: g, compact = false }: { group: ModelGroup; compact?: boolean } = $props();
 
@@ -49,7 +54,11 @@
         </div>
         {#if !compact}<div class="text-muted-foreground mt-2 text-xs">Not rated by {source.name}</div>{/if}
       {/if}
-      <BenchmarkField benchmark={b} field={app.catalog?.benchmarks[b]} ours={ours[b]!} highlights={s ? [{ key: g.key, color: "var(--brand)" }] : []} />
+      {#await loadField()}
+        <div class="mt-4 h-[98px]"></div>
+      {:then { default: BenchmarkField }}
+        <BenchmarkField benchmark={b} field={app.catalog?.benchmarks[b]} ours={ours[b]!} highlights={s ? [{ key: g.key, color: "var(--brand)" }] : []} />
+      {/await}
       {#if !compact}<p class="text-muted-foreground mt-3 text-xs">{info.about}</p>{/if}
     </div>
   {/each}
