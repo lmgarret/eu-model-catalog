@@ -35,7 +35,7 @@
     {/if}
   </div>
   <label class="ml-1 flex items-center gap-2 text-sm whitespace-nowrap">
-    <Switch bind:checked={() => picks.only, showOnly} />
+    <Switch bind:checked={() => picks.only && app.route.page === "home", showOnly} />
     Show only selected
   </label>
   <Button variant="ghost" onclick={() => picks.clear()}>Clear</Button>
