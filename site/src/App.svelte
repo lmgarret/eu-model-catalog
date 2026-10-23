@@ -95,7 +95,7 @@
 </header>
 
 <!-- Room for the tray, so it never covers the end of the list or the footer. -->
-<main class="mx-auto max-w-6xl px-6 {tray ? 'pb-24' : 'pb-16'}" style:--site-header="{headerHeight}px">
+<main class="mx-auto max-w-6xl px-6 {tray ? 'pb-48 lg:pb-24' : 'pb-16'}" style:--site-header="{headerHeight}px">
   {#if app.error}
     <p class="text-destructive mt-10 text-center">Couldn't load the catalog: {app.error}</p>
   {:else if !app.catalog}
