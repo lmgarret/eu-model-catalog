@@ -167,7 +167,7 @@ Svelte 5 with plain Vite (one page, so no SvelteKit), relative base path. It fet
 
    Optional later: DPA and sub-processors, EU AI Act status, PUE, gCO₂ per request, heat reuse, model license and origin, SLA and status page, billing entity.
 4. **Later, out of scope for now:**
-   - benchmarks in `extra` (e.g. Artificial Analysis API)
+   - ~~benchmarks~~ *Done:* Epoch AI and LMArena scores on lab models in `catalog.json`. Artificial Analysis was ruled out by its Data Platform Terms.
    - latency measured from our own Bifrost logs
    - an LLM job that reads pricing pages for providers without a price API and opens PRs against the overlay
    - an optional LiteLLM-format output

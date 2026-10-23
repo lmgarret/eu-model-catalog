@@ -17,6 +17,8 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: Qwen/Qwen3-235B-A22B-Instruct-2507
+    epoch: Qwen3-235B-A22B-Instruct (Jul 2025)
+    lmarena: Qwen3-235B-A22B-Instruct (2507)
     source: https://huggingface.co/Qwen/Qwen3-235B-A22B-Instruct-2507
     checked: 2026-10-22
   qwen3-coder-30b-a3b-instruct:
@@ -38,6 +40,7 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: Qwen/Qwen3.5-9B
+    epoch: Qwen3.5-9B
     source: https://huggingface.co/Qwen/Qwen3.5-9B
     checked: 2026-10-22
   qwen3.5-122b-a10b:
@@ -45,6 +48,7 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: Qwen/Qwen3.5-122B-A10B
+    lmarena: Qwen3.5-122B-A10B
     source: https://huggingface.co/Qwen/Qwen3.5-122B-A10B
     checked: 2026-10-22
   qwen3.5-397b-a17b:
@@ -52,6 +56,8 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: Qwen/Qwen3.5-397B-A17B
+    epoch: Qwen3.5 397B-A17B
+    lmarena: Qwen3.5-397B-A17B
     source: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
     checked: 2026-10-22
   qwen3.6-35b-a3b:
@@ -59,6 +65,7 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: Qwen/Qwen3.6-35B-A3B
+    epoch: Qwen 3.6 35B-A3B
     source: https://huggingface.co/Qwen/Qwen3.6-35B-A3B
     checked: 2026-10-22
   qwen3.8-27b:
@@ -66,6 +73,8 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: Qwen/Qwen3.8-27B
+    epoch: Qwen 3.8 27B
+    lmarena: Qwen3.8-27B
     source: https://huggingface.co/Qwen/Qwen3.8-27B
     checked: 2026-10-22
   qwen3-embedding-4b:

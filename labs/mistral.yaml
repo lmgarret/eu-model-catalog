@@ -6,6 +6,9 @@
 #   lab (providers.yaml `lab`), an <org>/<name> model id, then a slug only one lab lists. Model
 #   keys and `aliases` are matched case-insensitively; quantization suffixes (-FP8...) are ignored.
 #   - license / open_weights: the weights' license; `hf` (Hugging Face repo) is checked at build time.
+#   - epoch / lmarena: the chat model's exact name in Epoch AI's Capabilities Index (`Model` column of
+#     https://epoch.ai/data/eci_scores.csv) and on LMArena's text leaderboard, for its benchmark
+#     scores. Name the variant that scores best (e.g. `GLM-5.3 (Max)`); leave out models they don't rate.
 #   - source / checked: where the facts come from and when they were last verified.
 #
 # Mistral models are keyed by their API id; aliases list the other API ids Mistral's model cards
@@ -27,6 +30,8 @@ models:
   mistral-large-4:
     name: Mistral Large 4
     aliases: [mistral-large-4-0]
+    epoch: Mistral Large 4
+    lmarena: Mistral Large 4
     source: https://docs.mistral.ai/models/model-cards/mistral-large-4-0
     checked: 2026-10-22
     note: Open weights announced, but the weights and their license aren't published yet.
@@ -36,6 +41,7 @@ models:
     open_weights: true
     hf: mistralai/Mistral-Large-3-675B-Instruct-2512
     aliases: [mistral-large-latest, mistral-large-3, mistral-large-3-25-12]
+    lmarena: Mistral Large 3
     source: https://docs.mistral.ai/models/model-cards/mistral-large-3-25-12
     checked: 2026-10-22
   mistral-large-2411:
@@ -43,6 +49,8 @@ models:
     license: Mistral Research License
     open_weights: true
     hf: mistralai/Mistral-Large-Instruct-2411
+    epoch: Mistral Large 2 (Nov 2024)
+    lmarena: Mistral Large (2411)
     source: https://huggingface.co/mistralai/Mistral-Large-Instruct-2411
     checked: 2026-10-22
     note: The Hugging Face card names it "mrl".
@@ -52,6 +60,8 @@ models:
     open_weights: true
     hf: mistralai/Mistral-Medium-3.5-128B
     aliases: [mistral-medium-latest, mistral-medium-3, mistral-medium-3-5, mistral-medium-3.5, mistral-medium-3-5-26-04, mistral-medium-3.5-128b]
+    epoch: Mistral Medium 3.5
+    lmarena: Mistral Medium 3.5
     source: https://docs.mistral.ai/models/model-cards/mistral-medium-3-5-26-04
     checked: 2026-10-22
     note: Not usable by companies above $20M monthly revenue without a commercial license.
@@ -59,12 +69,15 @@ models:
     name: Mistral Medium 3.1
     license: Proprietary
     open_weights: false
+    lmarena: Mistral Medium 3.1 (2508)
     source: https://docs.mistral.ai/models/model-cards/mistral-medium-3-1-25-08
     checked: 2026-10-22
   mistral-medium-2505:
     name: Mistral Medium 3
     license: Proprietary
     open_weights: false
+    epoch: Mistral Medium 3
+    lmarena: Mistral Medium 3 (2505)
     source: https://docs.mistral.ai/models/model-cards/mistral-medium-3-25-05
     checked: 2026-10-22
   mistral-small-2603:
@@ -81,6 +94,7 @@ models:
     open_weights: true
     hf: mistralai/Mistral-Small-3.2-24B-Instruct-2506
     aliases: [mistral-small-3.2-24b-instruct-2506]
+    lmarena: Mistral Small 3.2 (2506)
     source: https://docs.mistral.ai/models/model-cards/mistral-small-3-2-25-06
     checked: 2026-10-22
   ministral-14b-2512:
@@ -113,6 +127,7 @@ models:
     open_weights: true
     hf: mistralai/Mistral-Nemo-Instruct-2407
     aliases: [open-mistral-nemo, mistral-nemo]
+    epoch: Mistral NeMo
     source: https://docs.mistral.ai/models/model-cards/mistral-nemo-12b-24-07
     checked: 2026-10-22
   pixtral-large-2411:

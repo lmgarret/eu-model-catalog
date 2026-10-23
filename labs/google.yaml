@@ -14,6 +14,8 @@ models:
     license: Gemma Terms of Use
     open_weights: true
     hf: google/gemma-3-27b-it
+    epoch: Gemma 3 27B
+    lmarena: Gemma 3 27B IT
     source: https://ai.google.dev/gemma/terms
     checked: 2026-10-22
   gemma-4-26b-a4b-it:
@@ -21,6 +23,8 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: google/gemma-4-26B-A4B-it
+    epoch: Gemma 4 26B A4B
+    lmarena: Gemma 4 26B A4B
     source: https://ai.google.dev/gemma/docs/gemma_4_license
     checked: 2026-10-22
   gemma-4-31b-it:
@@ -28,5 +32,7 @@ models:
     license: Apache-2.0
     open_weights: true
     hf: google/gemma-4-31B-it
+    epoch: Gemma 4 31B IT
+    lmarena: Gemma 4 31B
     source: https://ai.google.dev/gemma/docs/gemma_4_license
     checked: 2026-10-22

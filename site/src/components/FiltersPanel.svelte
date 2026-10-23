@@ -4,6 +4,7 @@
   import EyeIcon from "@lucide/svelte/icons/eye";
   import SlidersHorizontalIcon from "@lucide/svelte/icons/sliders-horizontal";
   import WrenchIcon from "@lucide/svelte/icons/wrench";
+  import { BENCHMARKS, BENCHMARK_INFO, SCALE } from "$lib/benchmarks.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
   import { Slider } from "$lib/components/ui/slider/index.js";
@@ -36,6 +37,14 @@
       on ? "border-brand/30 bg-brand/10 text-brand" : "hover:bg-muted"
     }`;
 </script>
+
+{#snippet slider(label: string, get: () => number, set: (v: number) => void)}
+  <div class="grid grid-cols-[5.5rem_1fr_3rem] items-center gap-3 py-2 text-sm">
+    {label}
+    <Slider type="single" bind:value={get, set} max={100} step={5} />
+    <span class="text-right font-mono text-xs {get() ? '' : 'text-muted-foreground'}">{get() ? `≥ ${get()}` : "any"}</span>
+  </div>
+{/snippet}
 
 {#snippet section(title: string)}
   <h5 class="text-muted-foreground mb-2.5 text-xs font-medium">{title}</h5>
@@ -94,11 +103,16 @@
     <div class="border-b p-4">
       {@render section("Minimum score")}
       {#each [["Privacy", "minPrivacy"], ["Eco", "minEco"]] as const as [label, key] (key)}
-        <div class="grid grid-cols-[4rem_1fr_3rem] items-center gap-3 py-2 text-sm">
-          {label}
-          <Slider type="single" bind:value={filters[key]} max={100} step={5} />
-          <span class="text-right font-mono text-xs {filters[key] ? '' : 'text-muted-foreground'}">{filters[key] ? `≥ ${filters[key]}` : "any"}</span>
-        </div>
+        {@render slider(label, () => filters[key], (v) => (filters[key] = v))}
+      {/each}
+    </div>
+
+    <div class="border-b p-4">
+      <h5 class="text-muted-foreground mb-2.5 text-xs font-medium" title={SCALE}>
+        Benchmarks <span class="text-muted-foreground/70">· a minimum hides models without that score</span>
+      </h5>
+      {#each BENCHMARKS as b (b)}
+        {@render slider(BENCHMARK_INFO[b].label, () => filters.minScores[b], (v) => (filters.minScores[b] = v))}
       {/each}
     </div>
 

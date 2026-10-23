@@ -1,0 +1,4 @@
+Model,Display name,eci,eci_ci_low,eci_ci_high,date,Organization,Country (of organization),Model accessibility,Accessibility group,model_versions
+Mistral Large 4,Mistral Large 4,150.03,146.94,152.74,2026-10-06,Mistral AI,France,Unknown,Other,
+Gemma 4 26B A4B,Gemma 4 26B A4B,141.88,138.86,143.43,2026-04-02,Google DeepMind,United States of America,Open weights (unrestricted),Open weights,
+DeepSeek Coder 33B,DeepSeek Coder 33B,95.94,82.55,103.09,2023-11-02,"DeepSeek,Peking University",China,Open weights (restricted use),Open weights,

@@ -7,5 +7,7 @@ models:
     name: Gemma 4 26B A4B
     open_weights: true
     hf: google/gemma-4-26b-a4b-it
+    epoch: Gemma 4 26B A4B
+    lmarena: Gemma 4 26B A4B
     source: https://example.com/gemma
     checked: 2026-10-22

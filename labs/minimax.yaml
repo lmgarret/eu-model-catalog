@@ -15,6 +15,8 @@ models:
     license: Modified MIT
     open_weights: true
     hf: MiniMaxAI/MiniMax-M2.5
+    epoch: MiniMax-M2.5
+    lmarena: MiniMax-M2.5
     source: https://huggingface.co/MiniMaxAI/MiniMax-M2.5
     checked: 2026-10-22
   minimax-m3:
@@ -22,6 +24,8 @@ models:
     license: MiniMax Community License
     open_weights: true
     hf: MiniMaxAI/MiniMax-M3
+    epoch: MiniMax-M3
+    lmarena: MiniMax-M3
     source: https://huggingface.co/MiniMaxAI/MiniMax-M3/blob/main/LICENSE
     checked: 2026-10-22
     note: >-

@@ -141,6 +141,10 @@ export const labModelSchema = z
     aliases: z.array(z.string()).default([]),
     release_date: z.string().optional(),
     knowledge_cutoff: z.string().optional(),
+    /** The model's exact name in Epoch AI's Capabilities Index (`Model` column), for its benchmark scores. */
+    epoch: z.string().optional(),
+    /** The model's exact name on LMArena's text leaderboard, for its coding rating. */
+    lmarena: z.string().optional(),
     source: z.url(),
     checked: isoDate,
     note: z.string().optional(),

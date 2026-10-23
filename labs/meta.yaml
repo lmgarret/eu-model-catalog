@@ -16,5 +16,7 @@ models:
     license: Llama 3.3 Community License
     open_weights: true
     hf: meta-llama/Llama-3.3-70B-Instruct
+    epoch: Llama 3.3 70B
+    lmarena: Llama 3.3 70B Instruct
     source: https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct
     checked: 2026-10-22

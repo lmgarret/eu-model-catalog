@@ -16,5 +16,6 @@ models:
     open_weights: true
     hf: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
     aliases: [nvidia-nemotron-3-nano-30b-a3b, nvidia-nemotron-3-nano-30b-a3b-bf16]
+    lmarena: NVIDIA-Nemotron-3-Nano-30B-A3B (BF16)
     source: https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
     checked: 2026-10-22

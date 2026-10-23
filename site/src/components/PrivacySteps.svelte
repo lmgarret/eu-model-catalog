@@ -4,7 +4,8 @@
   import { date } from "$lib/format.js";
   import type { SetupStep } from "$lib/types.js";
 
-  let { steps, name }: { steps: SetupStep[]; name: string } = $props();
+  /** `compact`: the access and cost tags go under the title, for the side panel. */
+  let { steps, name, compact = false }: { steps: SetupStep[]; name: string; compact?: boolean } = $props();
 
   // The first step starts open; `picked` is undefined until the user opens or closes one.
   let picked = $state<string | null>();
@@ -30,9 +31,19 @@
       <li class="border-b">
         <button class="flex w-full items-center gap-3 py-3 text-left" onclick={() => (picked = open === s.id ? null : s.id)} aria-expanded={open === s.id}>
           <span class="grid size-5.5 shrink-0 place-items-center rounded-full text-xs font-semibold {selfServe ? 'bg-good/12 text-good' : 'bg-warn/15 text-warn'}">{i + 1}</span>
-          <span class="flex-1 font-medium">{s.title}</span>
-          {#if !selfServe}<span class="bg-warn/15 text-warn rounded-full px-2 py-0.5 text-xs">{ACCESS_LABEL[s.access]}</span>{/if}
-          {#if s.cost}<span class="bg-muted text-muted-foreground max-w-48 truncate rounded-full px-2 py-0.5 text-xs" title={s.cost}>{s.cost}</span>{/if}
+          {#snippet tags()}
+            {#if !selfServe}<span class="bg-warn/15 text-warn shrink-0 rounded-full px-2 py-0.5 text-xs">{ACCESS_LABEL[s.access]}</span>{/if}
+            {#if s.cost}<span class="bg-muted text-muted-foreground max-w-48 truncate rounded-full px-2 py-0.5 text-xs" title={s.cost}>{s.cost}</span>{/if}
+          {/snippet}
+          {#if compact}
+            <span class="min-w-0 flex-1">
+              <span class="block font-medium">{s.title}</span>
+              {#if !selfServe || s.cost}<span class="mt-1 flex gap-1.5">{@render tags()}</span>{/if}
+            </span>
+          {:else}
+            <span class="flex-1 font-medium">{s.title}</span>
+            {@render tags()}
+          {/if}
           <ChevronDownIcon class="text-muted-foreground/60 size-4 shrink-0 transition-transform {open === s.id ? 'rotate-180' : ''}" />
         </button>
         {#if open === s.id}

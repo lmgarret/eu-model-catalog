@@ -15,6 +15,7 @@ models:
     license: MIT
     open_weights: true
     hf: deepseek-ai/DeepSeek-V4-Flash-0731
+    epoch: DeepSeek V4 Flash 0731
     source: https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-0731
     checked: 2026-10-22
   deepseek-v4.1-flash:
@@ -22,6 +23,8 @@ models:
     license: MIT
     open_weights: true
     hf: deepseek-ai/DeepSeek-V4.1-Flash
+    epoch: DeepSeek V4.1 Flash
+    lmarena: DeepSeek-V4.1-Flash-20260910 (Max)
     source: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
     checked: 2026-10-22
   deepseek-v4.1-flash-1017:

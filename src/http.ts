@@ -37,3 +37,8 @@ export async function fetchText(url: string, headers: Record<string, string> = {
   const res = await get(url, headers);
   return res.text();
 }
+
+export async function fetchBytes(url: string, headers: Record<string, string> = {}): Promise<ArrayBuffer> {
+  const res = await get(url, headers);
+  return res.arrayBuffer();
+}

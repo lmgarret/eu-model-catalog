@@ -12,13 +12,15 @@
   import Home from "./pages/Home.svelte";
   import LabPage from "./pages/LabPage.svelte";
   import LabsPage from "./pages/LabsPage.svelte";
+  import ModelPage from "./pages/ModelPage.svelte";
+  import DetailPanel from "./components/panels/DetailPanel.svelte";
   import ProviderPage from "./pages/ProviderPage.svelte";
   import ProvidersPage from "./pages/ProvidersPage.svelte";
 
   let scoring = $state(false);
 
   const SECTIONS = [
-    { label: "Models", href: href.home, pages: ["home"] },
+    { label: "Models", href: href.home, pages: ["home", "model"] },
     { label: "Providers", href: href.providers, pages: ["providers", "provider"] },
     { label: "Labs", href: href.labs, pages: ["labs", "lab"] },
   ];
@@ -31,8 +33,9 @@
 </script>
 
 <header class="bg-background/85 sticky top-0 z-20 backdrop-blur">
-  <div class="mx-auto flex h-15 max-w-6xl items-center justify-between gap-4 px-6">
-    <div class="flex items-center gap-8">
+  <!-- Wraps to two lines on phones instead of widening the page. -->
+  <div class="mx-auto flex min-h-15 max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 py-2 sm:py-0">
+    <div class="flex items-center gap-4 sm:gap-8">
       <a href={href.home} class="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight">
         <BrandMark size={24} />
         <span>eu<span class="text-muted-foreground/70 px-0.5 font-medium">/</span>models</span>
@@ -50,7 +53,7 @@
         {/each}
       </nav>
     </div>
-    <nav class="text-muted-foreground flex items-center gap-5 text-sm">
+    <nav class="text-muted-foreground flex items-center gap-4 text-sm sm:gap-5">
       <div class="flex gap-0.5 font-mono text-xs">
         {#each ["EUR", "CHF", "USD"] as const as c (c)}
           <button
@@ -95,6 +98,8 @@
       {#key app.route.id}<ProviderPage id={app.route.id} onTune={() => (scoring = true)} />{/key}
     {:else if app.route.page === "lab"}
       {#key app.route.id}<LabPage id={app.route.id} />{/key}
+    {:else if app.route.page === "model"}
+      {#key app.route.id}<ModelPage id={app.route.id} />{/key}
     {:else if app.route.page === "providers"}
       <ProvidersPage />
     {:else if app.route.page === "labs"}
@@ -132,9 +137,13 @@
       <p>
         Prices are converted with ECB reference rates and may differ from your invoice. Provider facts are mostly the
         providers' own claims. Logos from <a class="underline" href="https://models.dev" target="_blank" rel="noreferrer">models.dev</a>.
+        Benchmarks from <a class="underline" href="https://epoch.ai/benchmarks" target="_blank" rel="noreferrer">Epoch AI</a> and
+        <a class="underline" href="https://lmarena.ai/leaderboard" target="_blank" rel="noreferrer">LMArena</a>, under
+        <a class="underline" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.
       </p>
     </footer>
   {/if}
 </main>
 
 <ScoringDialog bind:open={scoring} />
+<DetailPanel />
