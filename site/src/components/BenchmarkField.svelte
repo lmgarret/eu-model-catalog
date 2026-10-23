@@ -1,20 +1,26 @@
 <!--
-  Where one model stands on a benchmark: the catalog's models (dots, linking to their page) and the
+  Where models stand on a benchmark: the catalog's models (dots, linking to their page) and the
   reference models from benchmarks.yaml (rings), on the source's own scale. A percentile axis would
-  just space the dots evenly. The vertical spread only keeps dots from overlapping.
+  just space the dots evenly. The vertical spread only keeps dots from overlapping. Highlighted
+  models are drawn in their colour with a guide line, and with `size="wide"` their labels above.
 -->
 <script lang="ts">
+  import { Chart, Layer, Tooltip } from "layerchart/svg";
+  import { dodge, labelRows, type Highlight } from "$lib/beeswarm.js";
   import { href, peek } from "$lib/state.svelte.js";
   import type { Benchmark, Fields } from "$lib/types.js";
 
   interface Dot {
     name: string;
     value: number;
-    kind: "current" | "ours" | "reference";
+    kind: "highlight" | "ours" | "reference";
     /** Model page, for catalog models. */
     key?: string;
     /** The reference's family. */
     family?: string;
+    /** For highlights. */
+    color?: string;
+    label?: string;
   }
 
   interface Props {
@@ -22,25 +28,32 @@
     field?: NonNullable<Fields[Benchmark]>;
     /** The catalog's models with a score on this benchmark. */
     ours: { key: string; name: string; source: string; value: number }[];
-    /** This model's key, when it has a score. */
-    current?: string;
+    /** Models drawn in their own colour, placed first so they keep the middle. */
+    highlights: Highlight[];
+    /** The card height, or a taller strip with room for labels. */
+    size?: "card" | "wide";
   }
 
-  let { benchmark, field, ours, current }: Props = $props();
+  let { benchmark, field, ours, highlights, size = "card" }: Props = $props();
 
   const STEP = 9; // dot spacing
   const PAD = 8;
-  const HALF = 30; // fixed, so the cards line up; the rare dot beyond it is pulled in
   const AXIS = 18;
-  const height = 2 * HALF + AXIS;
+  const ROW = 16; // label row height
+  /** Fixed, so the cards line up; the rare dot beyond it is pulled in. */
+  const half = $derived(size === "wide" ? 35 : 25);
+  const frame = $derived(half + 5);
 
   let width = $state(0);
-  let hovered = $state<(Dot & { x: number; y: number }) | null>(null);
 
   const all = $derived.by((): Dot[] => {
     const names = new Set(ours.map((o) => o.source));
+    const byKey = new Map(highlights.map((h) => [h.key, h]));
     return [
-      ...ours.map((o): Dot => ({ name: o.name, value: o.value, key: o.key, kind: o.key === current ? "current" : "ours" })),
+      ...ours.map((o): Dot => {
+        const h = byKey.get(o.key);
+        return { name: o.name, value: o.value, key: o.key, kind: h ? "highlight" : "ours", color: h?.color, label: h?.label };
+      }),
       ...(field?.references ?? [])
         .filter((r) => !names.has(r.name))
         .map((r): Dot => ({ name: r.name, value: r.value, family: r.family, kind: "reference" })),
@@ -48,87 +61,109 @@
   });
   const lo = $derived(Math.min(...all.map((d) => d.value)));
   const hi = $derived(Math.max(...all.map((d) => d.value)));
-  const x = (v: number) => PAD + ((v - lo) / (hi - lo || 1)) * (width - 2 * PAD);
+  const inner = $derived(width - 2 * PAD);
+  const px = (v: number) => ((v - lo) / (hi - lo || 1)) * inner;
 
-  /** Rows from the middle outwards: 0, +1, -1, +2, -2… steps. */
-  function* rows() {
-    yield 0;
-    for (let k = 1; ; k++) yield* [k * STEP, -k * STEP];
-  }
-
-  /** Each dot goes to the row nearest the middle where it doesn't touch an earlier one. */
+  /** Each dot with its vertical offset; highlights last, so they're drawn on top. */
   const dots = $derived.by(() => {
     if (!width) return [];
-    const placed: (Dot & { x: number; y: number })[] = [];
-    for (const d of [...all].sort((a, b) => a.value - b.value)) {
-      const px = x(d.value);
-      const near = placed.filter((p) => Math.abs(p.x - px) < STEP);
-      for (const dy of rows()) {
-        if (near.every((p) => (p.x - px) ** 2 + (p.y - dy) ** 2 >= STEP ** 2)) {
-          placed.push({ ...d, x: px, y: Math.max(-HALF + 5, Math.min(HALF - 5, dy)) });
-          break;
-        }
-      }
-    }
-    // The current model on top.
-    return placed.sort((a, b) => Number(a.kind === "current") - Number(b.kind === "current"));
+    const first = new Set(all.flatMap((d, i) => (d.kind === "highlight" ? [i] : [])));
+    const ys = dodge(
+      all.map((d) => px(d.value)),
+      { step: STEP, half, first },
+    );
+    return all.map((d, i) => ({ ...d, dy: ys[i]! })).sort((a, b) => Number(a.kind === "highlight") - Number(b.kind === "highlight"));
   });
-  const here = $derived(dots.find((d) => d.kind === "current"));
+  const lit = $derived(dots.filter((d) => d.kind === "highlight"));
+
+  /** Labels for the highlights that have one, kept inside the strip and stacked in rows so they don't overlap. */
+  const labels = $derived.by(() => {
+    if (size !== "wide") return [];
+    const shown = lit.filter((d) => d.label);
+    const widths = shown.map((d) => d.label!.length * 6.5);
+    const xs = shown.map((d, i) => Math.min(Math.max(px(d.value), widths[i]! / 2), inner - widths[i]! / 2));
+    const rows = labelRows(xs, widths, 8);
+    return shown.map((d, i) => ({ key: d.key!, text: d.label!, color: d.color!, x: xs[i]!, row: rows[i]! }));
+  });
+  const band = $derived(labels.length ? (Math.max(...labels.map((l) => l.row)) + 1) * ROW : 0);
+  const height = $derived(band + 2 * frame + AXIS);
+  /** Where each highlight's guide line starts: under its label, or the top of the strip. */
+  const guideTop = (key: string) => {
+    const l = labels.find((l) => l.key === key);
+    return l ? -l.row * ROW - 2 : -band;
+  };
 
   const fmt = (v: number) => (benchmark === "math" ? `${Math.round(v * 100)}%` : v.toFixed(0));
-
-  function hover(e: PointerEvent) {
-    const r = (e.currentTarget as SVGElement).getBoundingClientRect();
-    const [mx, my] = [e.clientX - r.left, e.clientY - r.top - HALF];
-    let nearest: (typeof dots)[number] | null = null;
-    let dist = 10 ** 2;
-    for (const d of dots) {
-      const dd = (d.x - mx) ** 2 + (d.y - my) ** 2;
-      if (dd >= dist) continue;
-      nearest = d;
-      dist = dd;
-    }
-    hovered = nearest;
-  }
+  const unlabelled = $derived(highlights.length === 1 && !highlights[0]!.label ? highlights[0] : undefined);
 </script>
 
-<div class="relative mt-4" bind:clientWidth={width}>
+<div class="mt-4" bind:clientWidth={width}>
   {#if width && all.length}
-    <svg
+    <Chart
+      data={dots}
+      x="value"
+      y="dy"
+      xDomain={[lo, hi === lo ? lo + 1 : hi]}
+      yDomain={[-frame, frame]}
+      yRange={[0, 2 * frame]}
+      padding={{ left: PAD, right: PAD, top: band, bottom: AXIS }}
       {width}
       {height}
-      role="img"
-      aria-label="{ours.length} catalog models and {all.length - ours.length} reference models, from {fmt(lo)} to {fmt(hi)}"
-      onpointermove={hover}
-      onpointerleave={() => (hovered = null)}
+      tooltipContext={{ mode: "quadtree", radius: 10 }}
     >
-      {#if here}<line x1={here.x} x2={here.x} y1="0" y2={height - AXIS + 2} class="stroke-brand/50" />{/if}
-      <g transform="translate(0 {HALF})">
-        {#each dots as d (d.name)}
-          {#if d.kind === "reference"}
-            <circle cx={d.x} cy={d.y} r="3.5" class="fill-card stroke-muted-foreground" stroke-width="1.5" />
-          {:else if d.kind === "ours"}
-            <a href={href.model(d.key!)} aria-label={d.name} onclick={(e) => peek(e, { kind: "model", id: d.key! })}><circle cx={d.x} cy={d.y} r="4" class="fill-foreground/55 stroke-card" stroke-width="2" /></a>
-          {:else}
-            <circle cx={d.x} cy={d.y} r="5.5" class="fill-brand stroke-card" stroke-width="2" />
-          {/if}
-        {/each}
-      </g>
-      <line x1={PAD} x2={width - PAD} y1={height - AXIS + 2} y2={height - AXIS + 2} class="stroke-border" />
-      <text x={PAD} y={height - 3} class="fill-muted-foreground font-mono text-[10px]">{fmt(lo)}</text>
-      <text x={width - PAD} y={height - 3} text-anchor="end" class="fill-muted-foreground font-mono text-[10px]">{fmt(hi)}</text>
-    </svg>
-    {#if hovered}
-      <div
-        class="bg-popover text-popover-foreground ring-foreground/10 pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-md px-2 py-1 text-xs whitespace-nowrap shadow-md ring-1"
-        style:left="{Math.min(Math.max(hovered.x, 70), width - 70)}px"
-        style:top="{hovered.y + HALF - 10}px"
-      >
-        {hovered.name} <span class="text-muted-foreground font-mono">{fmt(hovered.value)}</span>
-      </div>
-    {/if}
+      {#snippet children({ context })}
+        <Layer
+          type="svg"
+          role="img"
+          aria-label="{ours.length} catalog models and {all.length - ours.length} reference models, from {fmt(lo)} to {fmt(hi)}"
+        >
+          {#each lit as d (d.key)}
+            <line x1={context.xScale(d.value)} x2={context.xScale(d.value)} y1={guideTop(d.key!)} y2={2 * frame + 2} stroke={d.color} stroke-opacity="0.5" />
+          {/each}
+          {#each labels as l (l.key)}
+            <text x={l.x} y={-l.row * ROW - 5} text-anchor="middle" fill={l.color} class="text-[11px] font-medium">{l.text}</text>
+          {/each}
+          {#each dots as d (d.key ?? `ref:${d.name}`)}
+            {@const cx = context.xScale(d.value)}
+            {@const cy = context.yScale(d.dy)}
+            {#if d.kind === "reference"}
+              <circle {cx} {cy} r="3.5" class="fill-card stroke-muted-foreground" stroke-width="1.5" />
+            {:else if d.kind === "ours"}
+              <a href={href.model(d.key!)} aria-label={d.name} onclick={(e) => peek(e, { kind: "model", id: d.key! })}><circle {cx} {cy} r="4" class="fill-foreground/55 stroke-card" stroke-width="2" /></a>
+            {:else}
+              <circle {cx} {cy} r="5.5" fill={d.color} class="stroke-card" stroke-width="2" />
+            {/if}
+          {/each}
+          <line x1="0" x2={inner} y1={2 * frame + 2} y2={2 * frame + 2} class="stroke-border" />
+          <text x="0" y={2 * frame + AXIS - 3} class="fill-muted-foreground font-mono text-[10px]">{fmt(lo)}</text>
+          <text x={inner} y={2 * frame + AXIS - 3} text-anchor="end" class="fill-muted-foreground font-mono text-[10px]">{fmt(hi)}</text>
+        </Layer>
+        <!-- Above the dot, and kept from running far past the strip's ends. -->
+        <Tooltip.Root
+          x={Math.min(Math.max(PAD + context.xScale(context.tooltip.data?.value ?? lo), 70), width - 70)}
+          y="data"
+          anchor="bottom"
+          yOffset={10}
+          contained={false}
+          motion="none"
+          portal={false}
+          variant="none"
+          classes={{ root: "bg-popover text-popover-foreground ring-foreground/10 rounded-md px-2 py-1 text-xs whitespace-nowrap shadow-md ring-1" }}
+        >
+          {#snippet children({ data })}
+            {data.name} <span class="text-muted-foreground font-mono">{fmt(data.value)}</span>
+          {/snippet}
+        </Tooltip.Root>
+      {/snippet}
+    </Chart>
     <div class="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 text-[11px]">
-      {#if here}<span class="inline-flex items-center gap-1"><span class="bg-brand size-2 rounded-full"></span>This model</span>{/if}
+      {#if unlabelled}
+        <span class="inline-flex items-center gap-1"><span class="size-2 rounded-full" style:background-color={unlabelled.color}></span>This model</span>
+      {:else}
+        {#each highlights.filter((h) => h.label) as h (h.key)}
+          <span class="inline-flex items-center gap-1"><span class="size-2 rounded-full" style:background-color={h.color}></span>{h.label}</span>
+        {/each}
+      {/if}
       <span class="inline-flex items-center gap-1"><span class="bg-foreground/55 size-2 rounded-full"></span>In this catalog</span>
       <span class="inline-flex items-center gap-1" title="The latest Claude, GPT and Gemini models, and the best open-weight model">
         <span class="border-muted-foreground size-2 rounded-full border-[1.5px]"></span>Frontier references

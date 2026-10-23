@@ -39,3 +39,10 @@ export function labelRows(xs: readonly number[], widths: readonly number[], gap:
   }
   return rows;
 }
+
+/** A model drawn in its own colour on a benchmark strip, with an optional name label. */
+export interface Highlight {
+  key: string;
+  color: string;
+  label?: string;
+}

@@ -37,6 +37,9 @@
   --good: oklch(0.6 0.15 155);
   --warn: oklch(0.68 0.15 70);
   --bad: oklch(0.6 0.2 27);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
 }
 
 .dark {
@@ -63,6 +66,9 @@
   --good: oklch(0.72 0.16 155);
   --warn: oklch(0.8 0.14 75);
   --bad: oklch(0.7 0.18 25);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
 }
 
 @theme inline {

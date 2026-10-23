@@ -51,7 +51,7 @@
         </div>
         {#if !compact}<div class="text-muted-foreground mt-2 text-xs">Not rated by {source.name}</div>{/if}
       {/if}
-      <BenchmarkField benchmark={b} field={app.catalog?.benchmarks[b]} ours={ours[b]!} current={s && g.key} />
+      <BenchmarkField benchmark={b} field={app.catalog?.benchmarks[b]} ours={ours[b]!} highlights={s ? [{ key: g.key, color: "var(--brand)" }] : []} />
       {#if !compact}<p class="text-muted-foreground mt-3 text-xs">{info.about}</p>{/if}
     </div>
   {/each}
