@@ -6,7 +6,8 @@ function* offsets(step: number) {
 
 /**
  * Vertical offset for each x so dots a `step` apart don't touch. Dots in `first` are placed first
- * (so they get the middle), then the rest, each group by ascending x. Offsets are clamped to ±half.
+ * (so they get the middle), then the rest, each group by ascending x. Offsets are clamped to ±half,
+ * so in a crowded strip the clamped dots may overlap.
  */
 export function dodge(xs: readonly number[], opts: { step: number; half: number; first?: ReadonlySet<number> }): number[] {
   const { step, half, first } = opts;
