@@ -194,3 +194,9 @@ export function score(kind: ScoreKind, facts: ProviderFacts | undefined, weights
   const known = parts.reduce((s, p) => s + (p.rating ? p.weight : 0), 0);
   return { value: Math.round((earned / total) * 100), coverage: known / total, parts };
 }
+
+/** Text colour class for a 0–100 score: good from 70, warn from 40, bad below. */
+export function scoreTone(value: number | undefined): string {
+  if (value === undefined) return "text-muted-foreground";
+  return value >= 70 ? "text-good" : value >= 40 ? "text-warn" : "text-bad";
+}

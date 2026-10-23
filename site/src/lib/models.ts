@@ -135,6 +135,11 @@ const max = (xs: (number | undefined)[]) => {
   return v.length ? Math.max(...v) : undefined;
 };
 
+/** The cheapest per-token input price across chat models, ignoring per-unit prices; undefined if none. */
+export function cheapestChatInput(groups: ModelGroup[]): number | undefined {
+  return min(groups.filter((g) => g.mode === "chat").flatMap((g) => g.offers.map((o) => o.input)));
+}
+
 export const groupStats = (g: ModelGroup) => ({
   input: min(g.offers.map((o) => o.input ?? o.other?.usd)),
   output: min(g.offers.map((o) => o.output)),

@@ -16,7 +16,7 @@
 </script>
 
 <span
-  class={cn("inline-grid h-5 min-w-8 place-items-center rounded-md px-1.5 text-xs font-semibold tabular-nums", tone)}
+  class={cn("inline-grid h-5.5 min-w-8.5 place-items-center rounded-md px-1.5 text-xs font-semibold tabular-nums", tone)}
   title={score ? `${label} ${score.value}/100, ${Math.round(score.coverage * 100)}% of the weight known` : `${label}: no facts`}
 >
   {score?.value ?? "–"}

@@ -16,8 +16,8 @@
       <Dialog.Title>How scores work</Dialog.Title>
       <Dialog.Description>
         Each provider gets two scores out of 100 from its fact sheet. A criterion rates 0–100% and counts by its weight.
-        Privacy assumes the provider's maximum self-serve setup. Unknown facts count as 0; the dashed ring shows the
-        share of the weight with no known fact. Weights are saved in this browser.
+        Privacy assumes the provider's maximum self-serve setup. Unknown facts count as 0; hover a score to see the
+        share of the weight with a known fact. Weights are saved in this browser.
       </Dialog.Description>
     </Dialog.Header>
     {#each [["privacy", "Privacy & jurisdiction"], ["eco", "Sustainability"]] as const as [kind, title] (kind)}

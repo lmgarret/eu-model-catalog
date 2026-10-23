@@ -3,16 +3,24 @@ import { persisted } from "./persisted.svelte.js";
 import { type Score, type Weights, defaultWeights, score } from "./scores.js";
 import type { Catalog, Currency } from "./types.js";
 
-export type Route = { page: "home" } | { page: "provider"; id: string } | { page: "lab"; id: string };
+export type Route =
+  | { page: "home" }
+  | { page: "providers" }
+  | { page: "labs" }
+  | { page: "provider"; id: string }
+  | { page: "lab"; id: string };
 
 function parseRoute(hash: string): Route {
-  const [, kind, id] = hash.match(/^#\/(providers|labs)\/(.+)$/) ?? [];
-  if (kind && id) return { page: kind === "providers" ? "provider" : "lab", id: decodeURIComponent(id) };
+  const [, kind, id] = hash.match(/^#\/(providers|labs)(?:\/(.+))?$/) ?? [];
+  if (kind === "providers") return id ? { page: "provider", id: decodeURIComponent(id) } : { page: "providers" };
+  if (kind === "labs") return id ? { page: "lab", id: decodeURIComponent(id) } : { page: "labs" };
   return { page: "home" };
 }
 
 export const href = {
   home: "#/",
+  providers: "#/providers",
+  labs: "#/labs",
   provider: (id: string) => `#/providers/${encodeURIComponent(id)}`,
   lab: (id: string) => `#/labs/${encodeURIComponent(id)}`,
 };

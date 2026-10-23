@@ -5,7 +5,7 @@ A catalog of AI models from European providers (GreenPT, Regolo.ai, Infomaniak, 
 Published on GitHub Pages:
 
 - `pricing.json`: a pricing datasheet in Bifrost's format, for Bifrost's `pricing_url`
-- `/`: the catalog site: providers with privacy and eco scores, models grouped across hosts, a page per provider (fact sheet and maximum-privacy setup) and per AI lab
+- `/`: the catalog site: models grouped across hosts, a list of providers with privacy and eco scores and of AI labs, a page per provider (key facts, maximum-privacy setup, fact sheet) and per lab
 
 See [docs/plan.md](docs/plan.md) for the design.
 
