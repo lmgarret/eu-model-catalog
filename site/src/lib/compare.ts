@@ -2,7 +2,7 @@ import { BENCHMARKS, BENCHMARK_INFO, SOURCES } from "./benchmarks.js";
 import { date, fromUsd, money, tokens } from "./format.js";
 import { type ModelGroup, type Offer, groupStats } from "./models.js";
 import type { Score } from "./scores.js";
-import type { Catalog, Currency } from "./types.js";
+import type { Benchmark, Catalog, Currency } from "./types.js";
 
 /** How many models the compare page shows side by side. */
 export const MAX_COMPARE = 3;
@@ -191,4 +191,36 @@ export function specRows(groups: readonly (ModelGroup | undefined)[], ctx: SpecC
   ] as const;
   for (const [key, label] of FEATURES) add("Model", label, (g) => (g[key] ? "✓" : DASH));
   return rows;
+}
+
+/** A model on the price scatter: `price` is USD per 1M output tokens, `score` a percentile. */
+export interface PricePoint {
+  key: string;
+  name: string;
+  price: number;
+  score: number;
+}
+
+/** The chat models with both an output price and a score on `b`. */
+export function scatterPoints(groups: readonly ModelGroup[], b: Benchmark): PricePoint[] {
+  return groups.flatMap((g) => {
+    const price = groupStats(g).output;
+    const score = g.scores?.[b]?.percentile;
+    return g.mode === "chat" && price !== undefined && score !== undefined ? [{ key: g.key, name: g.name, price, score }] : [];
+  });
+}
+
+/** Why each model isn't on the scatter; "not rated" wins when both are missing. */
+export function missingFromScatter(groups: readonly ModelGroup[], b: Benchmark): { name: string; why: "no price" | "not rated" }[] {
+  return groups.flatMap((g) => {
+    const why = !g.scores?.[b] ? "not rated" : groupStats(g).output === undefined ? "no price" : undefined;
+    return why ? [{ name: g.name, why }] : [];
+  });
+}
+
+/** The best-value line: the points no other point beats on both price and score, by ascending price. */
+export function bestValueFrontier(points: readonly PricePoint[]): PricePoint[] {
+  const beaten = (p: PricePoint) =>
+    points.some((q) => (q.price <= p.price && q.score > p.score) || (q.price < p.price && q.score >= p.score));
+  return points.filter((p) => !beaten(p)).sort((a, b) => a.price - b.price);
 }

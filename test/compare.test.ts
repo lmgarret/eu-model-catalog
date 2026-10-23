@@ -5,9 +5,12 @@ import { BENCHMARKS, BENCHMARK_INFO } from "../site/src/lib/benchmarks.js";
 import { dodge, labelRows } from "../site/src/lib/beeswarm.js";
 import {
   type SpecContext,
+  type PricePoint,
   bestFlags,
+  bestValueFrontier,
   canCompare,
   compareHash,
+  missingFromScatter,
   ordinal,
   parseCompare,
   resolveKeys,
@@ -178,5 +181,28 @@ describe("spec rows", () => {
     const { pick, ctx } = await fixture();
     const output = row(specRows(pick("greenpt/green-embedding", "mistral/mistral-embed"), ctx), "Output /1M");
     expect(output.differs).toBe(false);
+  });
+});
+
+describe("price scatter", () => {
+  const pt = (key: string, price: number, score: number): PricePoint => ({ key, name: key, price, score });
+
+  it("keeps only the points no cheaper or equal-priced point beats", () => {
+    const points = [pt("a", 1, 50), pt("b", 2, 40), pt("c", 3, 70), pt("d", 3, 60), pt("e", 5, 70)];
+    expect(bestValueFrontier(points).map((p) => p.key)).toEqual(["a", "c"]);
+  });
+
+  it("gives no frontier for no points", () => {
+    expect(bestValueFrontier([])).toEqual([]);
+  });
+
+  it("says why a model is missing", () => {
+    const scores = { capabilities: { percentile: 80 } } as ModelGroup["scores"];
+    const noPrice = { key: "p", name: "P", mode: "chat", scores, offers: [{ input: 1 }] } as ModelGroup;
+    const noScore = { key: "s", name: "S", mode: "chat", offers: [{ input: 1, output: 2 }] } as ModelGroup;
+    expect(missingFromScatter([noPrice, noScore], "capabilities")).toEqual([
+      { name: "P", why: "no price" },
+      { name: "S", why: "not rated" },
+    ]);
   });
 });
