@@ -104,10 +104,11 @@ describe("format", () => {
   });
 
   it("formats prices and token counts", () => {
-    expect([money(1.5, "EUR"), money(0.5, "USD"), money(0.0225, "EUR"), money(0, "CHF")]).toEqual([
+    expect([money(1.5, "EUR"), money(0.5, "USD"), money(0.0225, "EUR"), money(0.0999, "EUR"), money(0, "CHF")]).toEqual([
       "€1.50",
       "$0.50",
       "€0.023",
+      "€0.10",
       "CHF 0.00",
     ]);
     expect([tokens(128000), tokens(1048576), tokens(262144)]).toEqual(["128K", "1M", "262K"]);

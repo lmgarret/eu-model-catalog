@@ -7,7 +7,7 @@
   import { compareBy } from "$lib/models.js";
   import { app, href } from "$lib/state.svelte.js";
   import Logo from "./Logo.svelte";
-  import ScoreRing from "./ScoreRing.svelte";
+  import ScoreBadge from "./ScoreBadge.svelte";
 
   type SortKey = "name" | "privacy" | "eco" | "models";
   let sort = $state<SortKey>("privacy");
@@ -20,7 +20,7 @@
         id,
         facts: p.facts,
         max,
-        models: app.offers.filter((o) => o.provider === id && !o.deprecated).length,
+        models: app.groups(app.offers.filter((o) => o.provider === id && !o.deprecated)).length,
         privacy: app.scores[id]?.privacy,
         eco: app.scores[id]?.eco,
       };
@@ -35,10 +35,11 @@
   const sorted = $derived([...rows].sort(compareBy(KEY[sort], sort === "name" ? 1 : -1)));
 
   const TRAINING = { never: "Never", opt_in: "Opt-in", opt_out: "Unless opted out" } as const;
+  const DOT = { good: "bg-good", warn: "bg-warn", bad: "bg-bad", none: "bg-muted-foreground/30" } as const;
 </script>
 
 {#snippet head(key: SortKey, label: string, cls = "")}
-  <Table.Head class={cls}>
+  <Table.Head class="text-muted-foreground h-10 px-3 text-xs font-medium {cls}">
     <button class="hover:text-foreground inline-flex items-center gap-1 {sort === key ? 'text-foreground' : ''}" onclick={() => (sort = key)}>
       {label}
       {#if sort === key}<ArrowDownIcon class="size-3" />{/if}
@@ -46,68 +47,58 @@
   </Table.Head>
 {/snippet}
 
-<div class="bg-card overflow-hidden rounded-xl border shadow-xs">
-  <Table.Root>
-    <Table.Header class="bg-muted/50">
-      <Table.Row class="hover:bg-transparent">
-        {@render head("name", "Provider")}
-        {@render head("privacy", "Privacy", "text-center")}
-        {@render head("eco", "Eco", "text-center")}
-        <Table.Head>Training</Table.Head>
-        <Table.Head>Retention</Table.Head>
-        <Table.Head>Regions</Table.Head>
-        <Table.Head>US parent</Table.Head>
-        <Table.Head>Renewable</Table.Head>
-        <Table.Head class="text-right">PUE</Table.Head>
-        {@render head("models", "Models", "text-right")}
-        <Table.Head class="w-8"></Table.Head>
-      </Table.Row>
-    </Table.Header>
-    <Table.Body>
-      {#each sorted as r (r.id)}
-        {@const entity = r.facts?.jurisdiction.legal_entity?.value}
-        {@const training = r.max?.privacy.training?.value}
-        {@const retention = r.max?.privacy.retention?.value.days}
-        {@const parent = r.facts?.jurisdiction.parent_company?.value}
-        {@const energy = r.facts?.sustainability.renewable_energy?.value}
-        <Table.Row class="cursor-pointer" onclick={() => (location.hash = href.provider(r.id))}>
-          <Table.Cell>
-            <a href={href.provider(r.id)} class="flex items-center gap-3">
-              <Logo name={r.facts?.name ?? r.id} logo={r.facts?.logo} color={r.facts?.color} size={32} />
-              <span>
-                <span class="block font-medium">{r.facts?.name ?? r.id}</span>
-                {#if entity}<span class="text-muted-foreground text-xs">{flag(entity.country)} {countryName(entity.country)}</span>{/if}
-              </span>
-            </a>
-          </Table.Cell>
-          <Table.Cell class="text-center"><ScoreRing score={r.privacy} label="Privacy" size={34} /></Table.Cell>
-          <Table.Cell class="text-center"><ScoreRing score={r.eco} label="Eco" size={34} /></Table.Cell>
-          <Table.Cell class={training === "never" ? "text-good" : training ? "text-warn" : "text-muted-foreground"}>
-            {training ? TRAINING[training] : "–"}
-          </Table.Cell>
-          <Table.Cell class={retention === 0 ? "text-good" : retention !== undefined ? "text-warn" : "text-muted-foreground"}>
-            {retention === undefined ? "–" : retention === 0 ? "Not stored" : `${retention} days`}
-          </Table.Cell>
-          <Table.Cell>
-            <span title={r.max?.jurisdiction.regions?.value.map((x) => countryName(x.country)).join(", ")}>
-              {[...new Set(r.max?.jurisdiction.regions?.value.map((x) => x.country))].map(flag).join(" ") || "–"}
+{#snippet fact(tone: keyof typeof DOT, text: string)}
+  <span class="inline-flex items-center gap-2"><span class="size-1.5 shrink-0 rounded-full {DOT[tone]}"></span>{text}</span>
+{/snippet}
+
+<Table.Root>
+  <Table.Header>
+    <Table.Row class="hover:bg-transparent">
+      {@render head("name", "Provider")}
+      {@render head("privacy", "Privacy", "text-center")}
+      {@render head("eco", "Eco", "text-center")}
+      <Table.Head class="text-muted-foreground h-10 px-3 text-xs font-medium">Trains on data</Table.Head>
+      <Table.Head class="text-muted-foreground h-10 px-3 text-xs font-medium">Retention</Table.Head>
+      <Table.Head class="text-muted-foreground h-10 px-3 text-xs font-medium">Data centers</Table.Head>
+      {@render head("models", "Models", "text-right")}
+      <Table.Head class="w-8"></Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    {#each sorted as r (r.id)}
+      {@const entity = r.facts?.jurisdiction.legal_entity?.value}
+      {@const training = r.max?.privacy.training?.value}
+      {@const retention = r.max?.privacy.retention?.value.days}
+      {@const regions = r.max?.jurisdiction.regions?.value}
+      <Table.Row class="cursor-pointer" onclick={() => (location.hash = href.provider(r.id))}>
+        <Table.Cell class="px-3 py-3.5">
+          <a href={href.provider(r.id)} class="flex items-center gap-3">
+            <Logo name={r.facts?.name ?? r.id} logo={r.facts?.logo} color={r.facts?.color} size={30} />
+            <span>
+              <span class="block font-medium">{r.facts?.name ?? r.id}</span>
+              {#if entity}<span class="text-muted-foreground text-xs">{flag(entity.country)} {countryName(entity.country)}</span>{/if}
             </span>
-          </Table.Cell>
-          <Table.Cell class={parent?.us_cloud_act ? "text-bad" : parent ? "text-good" : "text-muted-foreground"}>
-            {parent ? (parent.us_cloud_act ? "Yes" : "No") : "–"}
-          </Table.Cell>
-          <Table.Cell class="tabular-nums">
-            {#if energy}{energy.share}%<span class="text-muted-foreground ml-1 text-xs">{energy.backing === "unknown" ? "" : energy.backing.replace("_", " ")}</span>{:else}<span class="text-muted-foreground">–</span>{/if}
-          </Table.Cell>
-          <Table.Cell class="text-right tabular-nums">{r.facts?.sustainability.pue?.value ?? "–"}</Table.Cell>
-          <Table.Cell class="text-right tabular-nums">{r.models}</Table.Cell>
-          <Table.Cell><ChevronRightIcon class="text-muted-foreground size-4" /></Table.Cell>
-        </Table.Row>
-      {/each}
-    </Table.Body>
-  </Table.Root>
-</div>
-<p class="text-muted-foreground mt-2 text-xs">
-  Privacy columns show each provider at its maximum self-serve privacy setup; open a provider for the steps.
-  Facts are mostly the providers' own claims.
-</p>
+          </a>
+        </Table.Cell>
+        <Table.Cell class="px-3 text-center"><ScoreBadge score={r.privacy} label="Privacy" /></Table.Cell>
+        <Table.Cell class="px-3 text-center"><ScoreBadge score={r.eco} label="Eco" /></Table.Cell>
+        <Table.Cell class="px-3">
+          {@render fact(training === "never" ? "good" : training === "opt_in" ? "warn" : training ? "bad" : "none", training ? TRAINING[training] : "Unknown")}
+        </Table.Cell>
+        <Table.Cell class="px-3">
+          {@render fact(
+            retention === undefined ? "none" : retention === 0 ? "good" : retention <= 30 ? "warn" : "bad",
+            retention === undefined ? "Unknown" : retention === 0 ? "Not stored" : `${retention} days`,
+          )}
+        </Table.Cell>
+        <Table.Cell class="px-3">
+          <span title={regions?.map((x) => countryName(x.country)).join(", ")}>
+            {[...new Set(regions?.map((x) => x.country))].map(flag).join(" ") || "–"}
+          </span>
+        </Table.Cell>
+        <Table.Cell class="px-3 text-right font-mono tabular-nums">{r.models}</Table.Cell>
+        <Table.Cell class="pr-3 pl-0"><ChevronRightIcon class="text-muted-foreground/60 size-4" /></Table.Cell>
+      </Table.Row>
+    {/each}
+  </Table.Body>
+</Table.Root>

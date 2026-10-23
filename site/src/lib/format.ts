@@ -42,7 +42,9 @@ const SYMBOL: Record<Currency, string> = { USD: "$", EUR: "€", CHF: "CHF " };
 
 /** Short money string with enough significant digits for tiny per-unit prices. */
 export function money(amount: number, currency: Currency): string {
-  const options = amount >= 0.1 || amount === 0 ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : { maximumSignificantDigits: 2 };
+  // Decide on the rounded amount, so 0.0999 shows as 0.10, not 0.1.
+  const cents = Number(amount.toPrecision(2)) >= 0.1 || amount === 0;
+  const options = cents ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : { maximumSignificantDigits: 2 };
   return `${SYMBOL[currency]}${new Intl.NumberFormat("en", options).format(amount)}`;
 }
 
