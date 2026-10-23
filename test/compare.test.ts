@@ -1,7 +1,21 @@
 import { describe, expect, it } from "vitest";
+import { buildOutputs } from "../src/build.js";
+import { Warnings } from "../src/warnings.js";
+import { BENCHMARKS, BENCHMARK_INFO } from "../site/src/lib/benchmarks.js";
 import { dodge, labelRows } from "../site/src/lib/beeswarm.js";
-import { canCompare, compareHash, ordinal, parseCompare, resolveKeys } from "../site/src/lib/compare.js";
-import type { ModelGroup } from "../site/src/lib/models.js";
+import {
+  type SpecContext,
+  bestFlags,
+  canCompare,
+  compareHash,
+  ordinal,
+  parseCompare,
+  resolveKeys,
+  specRows,
+} from "../site/src/lib/compare.js";
+import { type ModelGroup, groupModels, toOffer } from "../site/src/lib/models.js";
+import { defaultWeights, score } from "../site/src/lib/scores.js";
+import { loadFixtureInputs } from "./helpers.js";
 
 describe("beeswarm", () => {
   it("dodges dots so none touch", () => {
@@ -83,5 +97,86 @@ describe("canCompare", () => {
 
   it("checks the count before the types", () => {
     expect(canCompare([chat, embedding, chat, embedding])).toEqual({ ok: false, reason: "Pick up to 3 to compare" });
+  });
+});
+
+describe("spec rows", () => {
+  async function fixture() {
+    const { catalog } = buildOutputs(await loadFixtureInputs(), new Warnings());
+    const groups = groupModels(catalog, catalog.models.map((m) => toOffer(m, "2026-10-22")));
+    const providerScores: SpecContext["providerScores"] = {};
+    for (const [id, p] of Object.entries(catalog.providers)) {
+      providerScores[id] = { privacy: score("privacy", p.facts, defaultWeights()), eco: score("eco", p.facts, defaultWeights()) };
+    }
+    const pick = (...keys: string[]) => keys.map((k) => groups.find((g) => g.key === k)!);
+    const ctx: SpecContext = { catalog, currency: "EUR", providerScores };
+    return { pick, ctx };
+  }
+  const row = (rows: ReturnType<typeof specRows>, label: string) => rows.find((r) => r.label === label)!;
+
+  it("tags every value that ties for best", () => {
+    expect(bestFlags([3, 5, 5], "higher")).toEqual([false, true, true]);
+    expect(bestFlags([3, 5], "lower")).toEqual([true, false]);
+  });
+
+  it("tags nothing when the values are all equal or fewer than 2 are known", () => {
+    expect(bestFlags([4, 4], "higher")).toEqual([false, false]);
+    expect(bestFlags([4, undefined], "higher")).toEqual([false, false]);
+  });
+
+  it("starts with the benchmarks for chat models and tags the larger context", async () => {
+    const { pick, ctx } = await fixture();
+    const rows = specRows(pick("mistral/mistral-small-2506", "swiss-ai/apertus-70b"), ctx);
+    expect(rows.map((r) => r.label)).toEqual([
+      ...BENCHMARKS.map((b) => BENCHMARK_INFO[b].label),
+      "Input /1M", "Output /1M", "Cheapest host",
+      "Hosts", "Privacy", "Eco",
+      "Context", "Max output", "Released", "Knowledge cutoff", "Weights", "License",
+      "Tool calling", "Structured output", "Image input", "Audio input", "Reasoning",
+    ]);
+    expect(row(rows, "Context").cells.map((c) => c.best)).toEqual([true, false]);
+  });
+
+  it("shows prices in the chosen currency but compares them the same way", async () => {
+    const { pick, ctx } = await fixture();
+    const groups = pick("mistral/mistral-small-2506", "swiss-ai/apertus-70b");
+    const eur = specRows(groups, ctx);
+    const chf = specRows(groups, { ...ctx, currency: "CHF" });
+    for (const label of ["Input /1M", "Output /1M"]) {
+      expect(row(eur, label).cells.map((c) => c.text)).not.toEqual(row(chf, label).cells.map((c) => c.text));
+      expect(row(eur, label).cells.map((c) => c.best)).toEqual(row(chf, label).cells.map((c) => c.best));
+    }
+    expect(row(eur, "Input /1M").cells.map((c) => c.best)).toEqual([true, false]);
+  });
+
+  it("leaves out benchmarks for embeddings and tags no missing output price", async () => {
+    const { pick, ctx } = await fixture();
+    const rows = specRows(pick("greenpt/green-embedding", "mistral/mistral-embed"), ctx);
+    expect(rows.some((r) => r.group === "Benchmarks")).toBe(false);
+    expect(row(rows, "Output /1M").cells).toEqual([
+      { text: "–", best: false },
+      { text: "–", best: false },
+    ]);
+  });
+
+  it("doesn't compare input prices in different units", async () => {
+    const { pick, ctx } = await fixture();
+    const rows = specRows(pick("regolo/faster-whisper-large-v3", "mistral/mistral-small-2506"), ctx);
+    const input = row(rows, "Input /1M");
+    expect(input.cells[0]!.text).toMatch(/^€0\.\d+ \/ minute$/);
+    expect(input.cells.map((c) => c.best)).toEqual([false, false]);
+  });
+
+  it("gives an unknown column dashes, ignored by best and differs", async () => {
+    const { pick, ctx } = await fixture();
+    const rows = specRows([...pick("mistral/mistral-small-2506", "swiss-ai/apertus-70b"), undefined], ctx);
+    expect(rows.every((r) => r.cells[2]!.text === "–" && !r.cells[2]!.best)).toBe(true);
+    expect(row(rows, "Weights").differs).toBe(false);
+  });
+
+  it("doesn't count a row of dashes as a difference", async () => {
+    const { pick, ctx } = await fixture();
+    const output = row(specRows(pick("greenpt/green-embedding", "mistral/mistral-embed"), ctx), "Output /1M");
+    expect(output.differs).toBe(false);
   });
 });
