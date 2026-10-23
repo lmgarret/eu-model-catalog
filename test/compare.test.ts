@@ -14,6 +14,7 @@ import {
   ordinal,
   parseCompare,
   resolveKeys,
+  scatterPoints,
   specRows,
 } from "../site/src/lib/compare.js";
 import { type ModelGroup, groupModels, toOffer } from "../site/src/lib/models.js";
@@ -215,6 +216,13 @@ describe("price scatter", () => {
       { name: "P", why: "no price" },
       { name: "S", why: "not rated" },
     ]);
+  });
+
+  it("leaves a free model off the log-scale scatter as having no price", () => {
+    const scores = { capabilities: { percentile: 80 } } as ModelGroup["scores"];
+    const free = { key: "f", name: "F", mode: "chat", scores, offers: [{ input: 0, output: 0 }] } as ModelGroup;
+    expect(scatterPoints([free], "capabilities")).toEqual([]);
+    expect(missingFromScatter([free], "capabilities")).toEqual([{ name: "F", why: "no price" }]);
   });
 });
 

@@ -207,10 +207,16 @@ export interface PricePoint {
   score: number;
 }
 
-/** The chat models with both an output price and a score on `b`. */
+/** An output price the log-scale scatter can place: known and above zero, so a free model counts as unpriced. */
+const plottablePrice = (g: ModelGroup) => {
+  const price = groupStats(g).output;
+  return price !== undefined && price > 0 ? price : undefined;
+};
+
+/** The chat models with both a plottable output price and a score on `b`. */
 export function scatterPoints(groups: readonly ModelGroup[], b: Benchmark): PricePoint[] {
   return groups.flatMap((g) => {
-    const price = groupStats(g).output;
+    const price = plottablePrice(g);
     const score = g.scores?.[b]?.percentile;
     return g.mode === "chat" && price !== undefined && score !== undefined ? [{ key: g.key, name: g.name, price, score }] : [];
   });
@@ -219,7 +225,7 @@ export function scatterPoints(groups: readonly ModelGroup[], b: Benchmark): Pric
 /** Why each model isn't on the scatter; "not rated" wins when both are missing. */
 export function missingFromScatter(groups: readonly ModelGroup[], b: Benchmark): { name: string; why: "no price" | "not rated" }[] {
   return groups.flatMap((g) => {
-    const why = !g.scores?.[b] ? "not rated" : groupStats(g).output === undefined ? "no price" : undefined;
+    const why = !g.scores?.[b] ? "not rated" : plottablePrice(g) === undefined ? "no price" : undefined;
     return why ? [{ name: g.name, why }] : [];
   });
 }
