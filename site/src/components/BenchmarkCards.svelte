@@ -1,6 +1,7 @@
 <!-- A chat model's benchmark scores, one card each, on its page (three columns) or in the side panel (stacked). -->
 <script lang="ts">
   import { BENCHMARKS, BENCHMARK_INFO, SCALE, SOURCES, rankAmong } from "$lib/benchmarks.js";
+  import { ordinal } from "$lib/compare.js";
   import { date } from "$lib/format.js";
   import type { ModelGroup } from "$lib/models.js";
   import { app } from "$lib/state.svelte.js";
@@ -35,14 +36,17 @@
         <a class="text-muted-foreground hover:text-foreground text-xs" href={source.url} target="_blank" rel="noreferrer">{source.name} ↗</a>
       </div>
       {#if s}
+        {@const raw = [!compact && info.raw(s), !compact && s.votes && `${s.votes.toLocaleString("en")} votes`].filter(Boolean).join(" · ")}
+        {@const stale = s.stale_since && `stale since ${date(s.stale_since.slice(0, 10))}`}
         <div class={compact ? "mt-1.5 flex items-baseline gap-3" : ""}>
-          <div class="{compact ? 'text-3xl' : 'mt-2 text-4xl'} leading-none font-semibold tracking-tighter tabular-nums {s.stale_since ? 'text-warn' : ''}">{s.percentile}</div>
+          <div class="{compact ? '' : 'mt-2'} leading-none tabular-nums" title={SCALE}>
+            <span class="{compact ? 'text-3xl' : 'text-4xl'} font-semibold tracking-tighter {s.stale_since ? 'text-warn' : ''}">{s.percentile}</span>
+            <span class="text-muted-foreground text-sm"> /100</span>
+          </div>
           <div>
-            <div class="{compact ? '' : 'mt-2'} font-mono text-xs">{info.raw(s)}</div>
-            <div class="text-muted-foreground mt-0.5 text-xs">
-              {[rank && `#${rank.rank} of ${rank.of} in this catalog`, s.votes && `${s.votes.toLocaleString("en")} votes`].filter(Boolean).join(" · ")}
-              {#if s.stale_since}<span class="text-warn"> · stale since {date(s.stale_since.slice(0, 10))}</span>{/if}
-            </div>
+            {#if rank}<div class="{compact ? '' : 'mt-2'} text-sm">{ordinal(rank.rank)} of {rank.of} models here</div>{/if}
+            {#if raw}<div class="text-muted-foreground mt-0.5 font-mono text-xs">{raw}{#if stale}<span class="text-warn"> · {stale}</span>{/if}</div>
+            {:else if stale}<div class="text-warn mt-0.5 text-xs">{stale}</div>{/if}
           </div>
         </div>
       {:else}

@@ -1,4 +1,5 @@
 import { type ModelGroup, type Offer, groupModels, toOffer } from "./models.js";
+import { compareHash, parseCompare } from "./compare.js";
 import { persisted } from "./persisted.svelte.js";
 import { type Score, type Weights, defaultWeights, score } from "./scores.js";
 import type { Benchmark, Catalog, Currency } from "./types.js";
@@ -9,10 +10,12 @@ export type Route =
   | { page: "labs" }
   | { page: "provider"; id: string }
   | { page: "lab"; id: string }
-  | { page: "model"; id: string };
+  | { page: "model"; id: string }
+  | { page: "compare"; ids: string[] };
 
 function parseRoute(hash: string): Route {
-  const [, kind, id] = hash.match(/^#\/(providers|labs|models)(?:\/(.+))?$/) ?? [];
+  const [, kind, id] = hash.match(/^#\/(providers|labs|models|compare)(?:\/(.*))?$/) ?? [];
+  if (kind === "compare") return { page: "compare", ids: parseCompare(id) };
   if (kind === "providers") return id ? { page: "provider", id: decodeURIComponent(id) } : { page: "providers" };
   if (kind === "labs") return id ? { page: "lab", id: decodeURIComponent(id) } : { page: "labs" };
   if (kind === "models" && id) return { page: "model", id: decodeURIComponent(id) };
@@ -27,6 +30,7 @@ export const href = {
   lab: (id: string) => `#/labs/${encodeURIComponent(id)}`,
   /** A model group's key: its canonical id, or the offer id for unattributed models. */
   model: (key: string) => `#/models/${encodeURIComponent(key)}`,
+  compare: compareHash,
 };
 
 /** Something shown in the side panel; `id` as in its page's route. */
@@ -116,6 +120,16 @@ class AppState {
     // Opened from a shared link: drop the panel from the URL without leaving the page.
     history.replaceState(null, "", this.path);
     this.panels = [];
+  }
+
+  /** Swaps the compared models in the URL without adding a history entry or reloading the page. */
+  replaceCompare(keys: string[]) {
+    const hash = compareHash(keys);
+    history.replaceState(null, "", hash);
+    this.path = hash;
+    this.route = parseRoute(hash);
+    this.panels = [];
+    this.pushed = 0;
   }
 
   providerName(id: string): string {

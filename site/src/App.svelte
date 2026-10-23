@@ -20,7 +20,7 @@
   let scoring = $state(false);
 
   const SECTIONS = [
-    { label: "Models", href: href.home, pages: ["home", "model"] },
+    { label: "Models", href: href.home, pages: ["home", "model", "compare"] },
     { label: "Providers", href: href.providers, pages: ["providers", "provider"] },
     { label: "Labs", href: href.labs, pages: ["labs", "lab"] },
   ];

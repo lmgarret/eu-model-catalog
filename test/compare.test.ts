@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { dodge, labelRows } from "../site/src/lib/beeswarm.js";
+import { compareHash, ordinal, parseCompare, resolveKeys } from "../site/src/lib/compare.js";
+import type { ModelGroup } from "../site/src/lib/models.js";
 
 describe("beeswarm", () => {
   it("dodges dots so none touch", () => {
@@ -23,5 +25,33 @@ describe("beeswarm", () => {
 
   it("stacks overlapping labels into rows", () => {
     expect(labelRows([100, 104, 400], [80, 80, 80], 6)).toEqual([0, 1, 0]);
+  });
+});
+
+describe("compare links", () => {
+  it("round-trips keys with slashes, commas and percent signs", () => {
+    const keys = ["mistral/a", "x,y", "p/q%r"];
+    expect(compareHash(keys)).toBe("#/compare/mistral%2Fa,x%2Cy,p%2Fq%25r");
+    expect(parseCompare(compareHash(keys).slice("#/compare/".length))).toEqual(keys);
+  });
+
+  it("gives no keys for an empty segment", () => {
+    expect(parseCompare("")).toEqual([]);
+    expect(parseCompare(undefined)).toEqual([]);
+  });
+
+  it("drops duplicates, keeping the first", () => {
+    expect(parseCompare("a,b,a")).toEqual(["a", "b"]);
+  });
+
+  it("resolves keys in order, leaving unknown ones undefined", () => {
+    const g1 = { key: "mistral/a" } as ModelGroup;
+    expect(resolveKeys(["gone", g1.key], [g1])).toEqual([undefined, g1]);
+  });
+
+  it("writes ordinals, with Best for first", () => {
+    expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 101, 111].map(ordinal)).toEqual([
+      "Best", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd", "101st", "111th",
+    ]);
   });
 });
