@@ -65,5 +65,6 @@
         {/each}
       {/each}
     </div>
+    {#if !sections.length}<p class="text-muted-foreground py-2.5 text-sm">No differences</p>{/if}
   </div>
 </div>
