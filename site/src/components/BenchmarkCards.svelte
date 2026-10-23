@@ -44,9 +44,13 @@
             <span class="text-muted-foreground text-sm"> /100</span>
           </div>
           <div>
-            {#if rank}<div class="{compact ? '' : 'mt-2'} text-sm">{ordinal(rank.rank)} of {rank.of} models here</div>{/if}
-            {#if raw}<div class="text-muted-foreground mt-0.5 font-mono text-xs">{raw}{#if stale}<span class="text-warn"> · {stale}</span>{/if}</div>
-            {:else if stale}<div class="text-warn mt-0.5 text-xs">{stale}</div>{/if}
+            {#if rank || (stale && !raw)}
+              <div class="{compact ? '' : 'mt-2'} text-sm">
+                {#if rank}{ordinal(rank.rank)} of {rank.of} models here{/if}
+                {#if stale && !raw}<span class="text-warn">{rank ? " · " : ""}{stale}</span>{/if}
+              </div>
+            {/if}
+            {#if raw}<div class="text-muted-foreground mt-0.5 font-mono text-xs">{raw}{#if stale}<span class="text-warn"> · {stale}</span>{/if}</div>{/if}
           </div>
         </div>
       {:else}

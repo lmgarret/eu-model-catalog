@@ -44,6 +44,10 @@ describe("compare links", () => {
     expect(parseCompare("a,b,a")).toEqual(["a", "b"]);
   });
 
+  it("keeps a part with a malformed percent escape as typed", () => {
+    expect(parseCompare("a%zz")).toEqual(["a%zz"]);
+  });
+
   it("resolves keys in order, leaving unknown ones undefined", () => {
     const g1 = { key: "mistral/a" } as ModelGroup;
     expect(resolveKeys(["gone", g1.key], [g1])).toEqual([undefined, g1]);
