@@ -26,6 +26,14 @@ export function parseCompare(segment: string | undefined): string[] {
 export const resolveKeys = (keys: readonly string[], groups: readonly ModelGroup[]): (ModelGroup | undefined)[] =>
   keys.map((k) => groups.find((g) => g.key === k));
 
+/** Whether the Compare button is enabled for these picks, and if not, the reason it shows. */
+export function canCompare(groups: readonly Pick<ModelGroup, "mode">[]): { ok: true } | { ok: false; reason: string } {
+  if (groups.length > MAX_COMPARE) return { ok: false, reason: `Pick up to ${MAX_COMPARE} to compare` };
+  if (groups.length < 2) return { ok: false, reason: `Pick 2 or ${MAX_COMPARE} to compare` };
+  if (new Set(groups.map((g) => g.mode)).size > 1) return { ok: false, reason: "Pick models of the same type" };
+  return { ok: true };
+}
+
 /** A rank in words: "Best" for 1, then "2nd", "3rd", "4th", "11th", "21st"… */
 export function ordinal(n: number): string {
   if (n === 1) return "Best";

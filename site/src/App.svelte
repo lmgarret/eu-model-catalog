@@ -5,9 +5,11 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
   import { ago, date } from "$lib/format.js";
+  import { picks } from "$lib/picks.svelte.js";
   import { app, href } from "$lib/state.svelte.js";
   import type { Catalog, Currency } from "$lib/types.js";
   import BrandMark from "./components/BrandMark.svelte";
+  import PickTray from "./components/PickTray.svelte";
   import ScoringDialog from "./components/ScoringDialog.svelte";
   import Home from "./pages/Home.svelte";
   import LabPage from "./pages/LabPage.svelte";
@@ -18,6 +20,8 @@
   import ProvidersPage from "./pages/ProvidersPage.svelte";
 
   let scoring = $state(false);
+  /** The pick tray shows on the pages with a models table, once a pick is known. */
+  const tray = $derived((app.route.page === "home" || app.route.page === "lab") && picks.groups.length > 0);
 
   const SECTIONS = [
     { label: "Models", href: href.home, pages: ["home", "model", "compare"] },
@@ -87,7 +91,8 @@
   </div>
 </header>
 
-<main class="mx-auto max-w-6xl px-6 pb-16">
+<!-- Room for the tray, so it never covers the end of the list or the footer. -->
+<main class="mx-auto max-w-6xl px-6 {tray ? 'pb-24' : 'pb-16'}">
   {#if app.error}
     <p class="text-destructive mt-10 text-center">Couldn't load the catalog: {app.error}</p>
   {:else if !app.catalog}
@@ -107,6 +112,7 @@
     {:else}
       <Home />
     {/if}
+    {#if tray}<PickTray />{/if}
 
     <footer class="text-muted-foreground mt-16 flex flex-col gap-1.5 border-t pt-5 text-xs">
       <p class="flex flex-wrap items-center gap-x-2 gap-y-1">

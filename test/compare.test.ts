@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dodge, labelRows } from "../site/src/lib/beeswarm.js";
-import { compareHash, ordinal, parseCompare, resolveKeys } from "../site/src/lib/compare.js";
+import { canCompare, compareHash, ordinal, parseCompare, resolveKeys } from "../site/src/lib/compare.js";
 import type { ModelGroup } from "../site/src/lib/models.js";
 
 describe("beeswarm", () => {
@@ -57,5 +57,31 @@ describe("compare links", () => {
     expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 101, 111].map(ordinal)).toEqual([
       "Best", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd", "101st", "111th",
     ]);
+  });
+});
+
+describe("canCompare", () => {
+  const chat = { mode: "chat" };
+  const embedding = { mode: "embedding" };
+
+  it("asks for a second pick", () => {
+    expect(canCompare([chat])).toEqual({ ok: false, reason: "Pick 2 or 3 to compare" });
+  });
+
+  it("allows 2 or 3 models of one type", () => {
+    expect(canCompare([chat, chat])).toEqual({ ok: true });
+    expect(canCompare([chat, chat, chat])).toEqual({ ok: true });
+  });
+
+  it("refuses more than 3", () => {
+    expect(canCompare([chat, chat, chat, chat])).toEqual({ ok: false, reason: "Pick up to 3 to compare" });
+  });
+
+  it("refuses mixed types", () => {
+    expect(canCompare([chat, embedding])).toEqual({ ok: false, reason: "Pick models of the same type" });
+  });
+
+  it("checks the count before the types", () => {
+    expect(canCompare([chat, embedding, chat, embedding])).toEqual({ ok: false, reason: "Pick up to 3 to compare" });
   });
 });

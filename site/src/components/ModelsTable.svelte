@@ -9,10 +9,12 @@
   import WrenchIcon from "@lucide/svelte/icons/wrench";
   import { BENCHMARKS, BENCHMARK_INFO, SCALE } from "$lib/benchmarks.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import { MODE_LABEL, breakable, date, fromUsd, money, tokens } from "$lib/format.js";
   import { type ModelGroup, compareBy, groupStats } from "$lib/models.js";
+  import { picks } from "$lib/picks.svelte.js";
   import { app, href, peek } from "$lib/state.svelte.js";
   import type { Benchmark } from "$lib/types.js";
   import BenchmarkCell from "./BenchmarkCell.svelte";
@@ -69,6 +71,7 @@
 
   // Fixed widths, so expanding a row never moves the columns; the model column takes the rest.
   const COLUMNS: { key?: SortKey; label: string; class?: string; title?: string }[] = [
+    { label: "", class: "w-10" },
     { key: "name", label: "Model" },
     { key: "hosts", label: "Hosts", class: "w-24" },
     { key: "input", label: "Input /1M", class: "w-28 text-right", title: "Cheapest per 1M tokens, or per unit shown" },
@@ -97,7 +100,7 @@
   </button>
 {/snippet}
 
-<Table.Root class="min-w-[56rem] table-fixed">
+<Table.Root class="min-w-[58.5rem] table-fixed">
   <Table.Header>
     <Table.Row class="hover:bg-transparent">
       {#each COLUMNS as c, i (i)}
@@ -140,6 +143,10 @@
       {@const isOpen = open.has(g.key)}
       {@const allDeprecated = g.offers.every((o) => o.deprecated)}
       <Table.Row class="cursor-pointer {allDeprecated ? 'opacity-55' : ''}" data-state={isOpen ? "selected" : undefined} onclick={() => toggle(g.key)}>
+        <!-- Ticking a model never expands its row. -->
+        <Table.Cell class="pr-0 pl-3" onclick={(e) => e.stopPropagation()}>
+          <Checkbox checked={picks.has(g.key)} onCheckedChange={() => picks.toggle(g.key)} aria-label="Select {g.name}" />
+        </Table.Cell>
         <Table.Cell class="px-3 py-3 whitespace-normal">
           <div class="flex min-w-56 items-center gap-3">
             {#if showLab}<Logo name={lab?.name ?? g.name} logo={lab?.logo} color={lab?.color} size={28} />{/if}
@@ -214,6 +221,7 @@
           {@const f = catalog.providers[o.provider]?.facts}
           {@const s = app.scores[o.provider]}
           <Table.Row class="bg-muted/30 hover:bg-muted/40 {o.deprecated ? 'opacity-55' : ''}">
+            <Table.Cell></Table.Cell>
             <Table.Cell colspan={2} class="px-3 py-2.5 whitespace-normal">
               <div class="flex items-center gap-2.5 {showLab ? 'pl-10' : ''}">
                 <a href={href.provider(o.provider)} title="{f?.name ?? o.provider} fact sheet" onclick={(e) => peek(e, { kind: "provider", id: o.provider })}>

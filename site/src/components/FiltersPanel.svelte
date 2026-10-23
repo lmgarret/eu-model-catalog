@@ -15,8 +15,8 @@
   import FilterSelect from "./FilterSelect.svelte";
   import Logo from "./Logo.svelte";
 
-  /** How many models the current filters show, for the footer button. */
-  let { count }: { count: number } = $props();
+  /** `count`: how many models the current filters show, for the footer button; `disabled` pauses the trigger. */
+  let { count, disabled = false }: { count: number; disabled?: boolean } = $props();
 
   let open = $state(false);
 
@@ -51,7 +51,7 @@
 {/snippet}
 
 <Popover.Root bind:open>
-  <Popover.Trigger>
+  <Popover.Trigger {disabled}>
     {#snippet child({ props })}
       <Button {...props} variant="outline" class="h-10 gap-2 rounded-xl px-4">
         <SlidersHorizontalIcon class="text-muted-foreground" /> Filters

@@ -4,6 +4,7 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { filters } from "$lib/filters.svelte.js";
   import { MODE_LABEL } from "$lib/format.js";
+  import { picks } from "$lib/picks.svelte.js";
   import { app, href } from "$lib/state.svelte.js";
   import FiltersPanel from "../components/FiltersPanel.svelte";
   import ModelsTable from "../components/ModelsTable.svelte";
@@ -12,7 +13,8 @@
   const catalog = $derived(app.catalog!);
   const base = $derived(filters.apply(app.offers));
   const modeCounts = $derived(base.reduce<Record<string, number>>((acc, g) => ((acc[g.mode] = (acc[g.mode] ?? 0) + 1), acc), {}));
-  const shown = $derived(filters.mode === "all" ? base : base.filter((g) => g.mode === filters.mode));
+  // "Show only selected" ignores search, filters and the type, so a pick never disappears.
+  const shown = $derived(picks.only ? picks.groups : filters.mode === "all" ? base : base.filter((g) => g.mode === filters.mode));
   const totalGroups = $derived(app.groups(app.offers.filter((o) => !o.deprecated)).length);
   const labCount = $derived(new Set(app.groups(app.offers).map((g) => g.lab).filter(Boolean)).size);
   const modes = $derived([
@@ -34,20 +36,27 @@
   </p>
 </section>
 
-<div class="flex items-center gap-2">
+<!-- The disabled controls ignore the pointer, so the title sits on their row. -->
+<div class="flex items-center gap-2" title={picks.only ? "Paused while showing selected" : undefined}>
   <div class="relative flex-1">
     <SearchIcon class="text-muted-foreground absolute top-1/2 left-3.5 size-4 -translate-y-1/2" />
-    <Input bind:value={filters.q} placeholder="Search models, labs, licenses, Bifrost ids…" class="h-10 rounded-xl pl-10" />
+    <Input bind:value={filters.q} placeholder="Search models, labs, licenses, Bifrost ids…" class="h-10 rounded-xl pl-10" disabled={picks.only} />
   </div>
-  <FiltersPanel count={shown.length} />
+  <FiltersPanel count={shown.length} disabled={picks.only} />
 </div>
 
 <div class="mt-3.5 flex flex-wrap items-center justify-between gap-2">
-  <PillTabs options={modes} bind:value={filters.mode} />
+  {#if picks.only}
+    <button class="bg-brand/10 text-brand hover:bg-brand/15 inline-flex items-center gap-1 rounded-full py-1 pr-2 pl-3 text-xs" onclick={() => (picks.only = false)}>
+      Selected only ({shown.length}) <XIcon class="size-3" />
+    </button>
+  {:else}
+    <PillTabs options={modes} bind:value={filters.mode} />
+  {/if}
   <span class="text-muted-foreground text-sm tabular-nums">{shown.length} of {totalGroups}</span>
 </div>
 
-{#if filters.chips.length}
+{#if filters.chips.length && !picks.only}
   <div class="mt-3 flex flex-wrap items-center gap-1.5">
     {#each filters.chips as chip (chip.label)}
       <button class="bg-brand/10 text-brand hover:bg-brand/15 inline-flex items-center gap-1 rounded-full py-1 pr-2 pl-3 text-xs" onclick={chip.clear}>
