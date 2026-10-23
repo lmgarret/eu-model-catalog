@@ -8,41 +8,42 @@ export const SOURCES: Record<BenchmarkScore["source"], { name: string; url: stri
   lmarena: { name: "LMArena", url: "https://lmarena.ai/leaderboard" },
 };
 
-export const BENCHMARK_INFO: Record<Benchmark, { label: string; about: string; format: (v: number) => string }> = {
+/** What each benchmark measures; scores show as percentiles among every model the source rates. */
+export const BENCHMARK_INFO: Record<
+  Benchmark,
+  { label: string; source: BenchmarkScore["source"]; about: string; raw: (s: BenchmarkScore) => string }
+> = {
   capabilities: {
     label: "Capabilities",
-    about: "Epoch Capabilities Index: many benchmarks on one scale, where Claude 3.5 Sonnet scores 130 and GPT-5 150.",
-    format: (v) => v.toFixed(0),
+    source: "epoch",
+    about: "Epoch Capabilities Index: many benchmarks combined on one scale.",
+    raw: (s) => `ECI ${withCi(s)}`,
   },
   coding: {
     label: "Coding",
-    about:
-      "LMArena coding rating: people vote for the better of two answers to their coding prompts. " +
-      "It measures preference, not correctness; ratings about 10 apart are a tie.",
-    format: (v) => v.toFixed(0),
+    source: "lmarena",
+    about: "LMArena coding rating: people vote for the better of two answers to their coding prompts. Preference, not correctness.",
+    raw: (s) => withCi(s),
   },
   math: {
     label: "Math",
-    about: "OTIS Mock AIME 2024–2025, run by Epoch AI: share of competition math problems solved.",
-    format: (v) => `${Math.round(v * 100)}%`,
+    source: "epoch",
+    about: "FrontierMath Tiers 1–3, run by Epoch AI: hard, research-level math problems.",
+    raw: (s) => `${Math.round(s.value * 100)}% solved`,
   },
 };
 
-/** Lowest and highest score per benchmark, to scale the bars. */
-export function benchmarkRanges(groups: ModelGroup[]): Partial<Record<Benchmark, [number, number]>> {
-  const out: Partial<Record<Benchmark, [number, number]>> = {};
-  for (const b of BENCHMARKS) {
-    const v = groups.map((g) => g.scores?.[b]?.value).filter((x) => x !== undefined);
-    if (v.length) out[b] = [Math.min(...v), Math.max(...v)];
-  }
-  return out;
+function withCi(s: BenchmarkScore): string {
+  return s.ci ? `${s.value.toFixed(0)} ±${Math.round((s.ci[1] - s.ci[0]) / 2)}` : s.value.toFixed(0);
 }
 
-/** Tooltip text: the score, its interval and votes, and where it comes from. */
-export function describeScore(b: Benchmark, s: BenchmarkScore): string {
-  const { label, format, about } = BENCHMARK_INFO[b];
-  const ci = s.ci ? ` (${format(s.ci[0])}–${format(s.ci[1])})` : "";
-  const votes = s.votes ? `, ${s.votes.toLocaleString("en")} votes` : "";
-  const stale = s.stale_since ? `. Stale: ${SOURCES[s.source].name} failed, reused from ${s.stale_since.slice(0, 10)}` : "";
-  return `${label} ${format(s.value)}${ci}${votes}, as "${s.name}" on ${SOURCES[s.source].name}${stale}.\n${about}`;
+/** Explains the 0–100 scale, for titles. */
+export const SCALE = "0–100: the share of all the models the source rates that score lower";
+
+/** 1-based rank of `g` among the groups with a score on `b`, and how many have one. */
+export function rankAmong(groups: ModelGroup[], g: ModelGroup, b: Benchmark): { rank: number; of: number } | undefined {
+  const value = g.scores?.[b]?.value;
+  if (value === undefined) return undefined;
+  const scored = groups.flatMap((x) => (x.scores?.[b] ? [x.scores[b].value] : []));
+  return { rank: scored.filter((v) => v > value).length + 1, of: scored.length };
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { scoresSchema } from "./benchmarks.js";
+import { fieldsSchema, scoresSchema } from "./benchmarks.js";
 import { labModelSchema, labSchema, providerFactsSchema } from "./facts.js";
 import { CURRENCIES, MODES, SOURCES, UNITS, isoDate, type ModelInfo, modelRecordSchema } from "./model.js";
 import { BIFROST_PRICE_FIELDS } from "./money.js";
@@ -121,6 +121,8 @@ export const catalogSchema = z.object({
       }),
     )
     .default({}),
+  /** Every model each benchmark's source rates. Scores per model are on `labs.<lab>.models.<slug>.scores`. */
+  benchmarks: fieldsSchema.default({}),
   warnings: z.array(
     z.object({
       code: z.enum(WARNING_CODES),

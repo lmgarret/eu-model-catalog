@@ -4,7 +4,8 @@
   import { EUROPE, countryName, flag } from "$lib/format.js";
   import type { ProviderFacts } from "$lib/types.js";
 
-  let { facts }: { facts: ProviderFacts } = $props();
+  /** `compact`: two columns, for the side panel. */
+  let { facts, compact = false }: { facts: ProviderFacts; compact?: boolean } = $props();
 
   type Tone = "good" | "warn" | "bad" | "none";
   const DOT: Record<Tone, string> = { good: "bg-good", warn: "bg-warn", bad: "bg-bad", none: "bg-muted-foreground/30" };
@@ -71,9 +72,9 @@
   });
 </script>
 
-<div class="grid grid-cols-2 overflow-hidden rounded-2xl border sm:grid-cols-3 lg:grid-cols-6">
+<div class="grid grid-cols-2 overflow-hidden rounded-2xl border {compact ? '' : 'sm:grid-cols-3 lg:grid-cols-6'}">
   {#each items as it (it.label)}
-    <div class="border-r border-b p-4 last:border-r-0 lg:border-b-0">
+    <div class="border-b p-4 {compact ? 'odd:border-r [&:nth-last-child(-n+2)]:border-b-0' : 'border-r last:border-r-0 lg:border-b-0'}">
       <div class="text-muted-foreground text-xs">{it.label}</div>
       <div class="mt-1.5 flex items-center gap-2 font-medium {it.tone === 'none' ? 'text-muted-foreground font-normal' : ''}">
         <span class="size-1.5 shrink-0 rounded-full {DOT[it.tone]}"></span>{it.text}

@@ -1,6 +1,10 @@
+import { BENCHMARKS, BENCHMARK_INFO } from "./benchmarks.js";
 import { EUROPE } from "./format.js";
 import type { ModelGroup, Offer } from "./models.js";
 import { app } from "./state.svelte.js";
+import type { Benchmark } from "./types.js";
+
+const noMinimums = (): Record<Benchmark, number> => ({ capabilities: 0, coding: 0, math: 0 });
 
 export const FEATURES = [
   ["tools", "Tool calling"],
@@ -20,6 +24,8 @@ class Filters {
   features = $state<string[]>([]);
   minPrivacy = $state(0);
   minEco = $state(0);
+  /** Minimum percentile per benchmark; a set minimum hides models without that score. */
+  minScores = $state(noMinimums());
   hideDeprecated = $state(true);
   hideUnpriced = $state(false);
 
@@ -30,6 +36,7 @@ class Filters {
     this.euLab = this.openWeights = this.hideUnpriced = false;
     this.features = [];
     this.minPrivacy = this.minEco = 0;
+    this.minScores = noMinimums();
     this.hideDeprecated = true;
   }
 
@@ -47,6 +54,9 @@ class Filters {
     }
     if (this.minPrivacy) chips.push({ label: `Privacy ≥ ${this.minPrivacy}`, clear: () => (this.minPrivacy = 0) });
     if (this.minEco) chips.push({ label: `Eco ≥ ${this.minEco}`, clear: () => (this.minEco = 0) });
+    for (const b of BENCHMARKS) {
+      if (this.minScores[b]) chips.push({ label: `${BENCHMARK_INFO[b].label} ≥ ${this.minScores[b]}`, clear: () => (this.minScores[b] = 0) });
+    }
     if (!this.hideDeprecated) chips.push({ label: "With deprecated", clear: () => (this.hideDeprecated = true) });
     if (this.hideUnpriced) chips.push({ label: "Priced only", clear: () => (this.hideUnpriced = false) });
     return chips;
@@ -67,6 +77,7 @@ class Filters {
     if (this.euLab && !(lab && EUROPE.has(lab.country))) return false;
     if (this.openWeights && !g.openWeights) return false;
     if (this.features.some((f) => !g[f as "tools"])) return false;
+    if (BENCHMARKS.some((b) => this.minScores[b] && (g.scores?.[b]?.percentile ?? -1) < this.minScores[b])) return false;
     const needle = this.q.trim().toLowerCase();
     if (needle) {
       const text = [g.name, g.canonical, lab?.name, g.license, ...g.offers.map((o) => o.bifrostId)].join(" ").toLowerCase();

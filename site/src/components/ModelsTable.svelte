@@ -7,19 +7,17 @@
   import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
   import EyeIcon from "@lucide/svelte/icons/eye";
   import WrenchIcon from "@lucide/svelte/icons/wrench";
-  import { BENCHMARKS, BENCHMARK_INFO, SOURCES, benchmarkRanges, describeScore } from "$lib/benchmarks.js";
+  import { BENCHMARKS, BENCHMARK_INFO, SCALE } from "$lib/benchmarks.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
-  import { MODE_LABEL, date, fromUsd, money, tokens } from "$lib/format.js";
+  import { MODE_LABEL, breakable, date, fromUsd, money, tokens } from "$lib/format.js";
   import { type ModelGroup, compareBy, groupStats } from "$lib/models.js";
-  import { persisted } from "$lib/persisted.svelte.js";
-  import { app, href } from "$lib/state.svelte.js";
+  import { app, href, peek } from "$lib/state.svelte.js";
   import type { Benchmark } from "$lib/types.js";
-  import BenchmarkBar from "./BenchmarkBar.svelte";
+  import BenchmarkCell from "./BenchmarkCell.svelte";
   import CopyButton from "./CopyButton.svelte";
   import Logo from "./Logo.svelte";
-  import OfferSources from "./OfferSources.svelte";
   import ScoreBadge from "./ScoreBadge.svelte";
 
   /** `showLab` is off on a lab's own page, where every row has the same lab. */
@@ -27,13 +25,10 @@
 
   type SortKey = "name" | "hosts" | "input" | "output" | "bench" | "context" | "privacy" | "eco";
   let sort = $state<{ key: SortKey; dir: 1 | -1 }>({ key: "hosts", dir: -1 });
-  const bench = persisted<Benchmark>("benchmark", "capabilities");
+  const bench = app.benchmark;
   let open = $state<Set<string>>(new Set());
-  let sources = $state<string | null>(null);
 
   const catalog = $derived(app.catalog!);
-  // Bars scale over every model, so filtering doesn't change them.
-  const ranges = $derived(benchmarkRanges(app.groups(app.offers)));
   const mixedModes = $derived(new Set(groups.map((g) => g.mode)).size > 1);
   const bestScore = (g: ModelGroup, kind: "privacy" | "eco") =>
     g.offers.map((o) => app.scores[o.provider]?.[kind]).filter((s) => s !== undefined).sort((a, b) => b.value - a.value)[0];
@@ -43,7 +38,7 @@
     hosts: (g) => g.offers.length,
     input: (g) => groupStats(g).input,
     output: (g) => groupStats(g).output,
-    bench: (g) => g.scores?.[bench.value]?.value,
+    bench: (g) => g.scores?.[bench.value]?.percentile,
     context: (g) => groupStats(g).context,
     privacy: (g) => bestScore(g, "privacy")?.value,
     eco: (g) => bestScore(g, "eco")?.value,
@@ -72,16 +67,17 @@
   const price = (usd: number | undefined) =>
     usd === undefined ? undefined : money(fromUsd(usd, app.currency.value, catalog.exchange_rates), app.currency.value);
 
+  // Fixed widths, so expanding a row never moves the columns; the model column takes the rest.
   const COLUMNS: { key?: SortKey; label: string; class?: string; title?: string }[] = [
     { key: "name", label: "Model" },
-    { key: "hosts", label: "Hosts" },
-    { key: "input", label: "Input /1M", class: "text-right", title: "Cheapest per 1M tokens, or per unit shown" },
-    { key: "output", label: "Output /1M", class: "text-right", title: "Cheapest per 1M tokens" },
-    { key: "bench", label: "Benchmark", title: "Benchmark score of the lab's model, chat models only" },
-    { key: "context", label: "Context", class: "text-right" },
-    { label: "" },
-    { key: "privacy", label: "Privacy", class: "text-center", title: "Best host's privacy score" },
-    { key: "eco", label: "Eco", class: "text-center", title: "Best host's sustainability score" },
+    { key: "hosts", label: "Hosts", class: "w-24" },
+    { key: "input", label: "Input /1M", class: "w-28 text-right", title: "Cheapest per 1M tokens, or per unit shown" },
+    { key: "output", label: "Output /1M", class: "w-24 text-right", title: "Cheapest per 1M tokens" },
+    { key: "bench", label: "Benchmark", class: "w-32", title: `Benchmark of the lab's model, chat models only. ${SCALE}` },
+    { key: "context", label: "Context", class: "w-20 text-right" },
+    { label: "", class: "w-30" },
+    { key: "privacy", label: "Privacy", class: "w-18 text-center", title: "Best host's privacy score" },
+    { key: "eco", label: "Eco", class: "w-16 text-center", title: "Best host's sustainability score" },
   ];
   const FEATURES = [
     ["tools", "Tool calling", WrenchIcon],
@@ -101,7 +97,7 @@
   </button>
 {/snippet}
 
-<Table.Root>
+<Table.Root class="min-w-[56rem] table-fixed">
   <Table.Header>
     <Table.Row class="hover:bg-transparent">
       {#each COLUMNS as c, i (i)}
@@ -144,18 +140,18 @@
       {@const isOpen = open.has(g.key)}
       {@const allDeprecated = g.offers.every((o) => o.deprecated)}
       <Table.Row class="cursor-pointer {allDeprecated ? 'opacity-55' : ''}" data-state={isOpen ? "selected" : undefined} onclick={() => toggle(g.key)}>
-        <Table.Cell class="px-3 py-3">
+        <Table.Cell class="px-3 py-3 whitespace-normal">
           <div class="flex min-w-56 items-center gap-3">
             {#if showLab}<Logo name={lab?.name ?? g.name} logo={lab?.logo} color={lab?.color} size={28} />{/if}
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 font-medium">
-                {g.name}
+                <a href={href.model(g.key)} class="hover:underline" onclick={(e) => peek(e, { kind: "model", id: g.key })}>{g.name}</a>
                 {#if allDeprecated}<Badge variant="destructive">deprecated</Badge>{/if}
               </div>
               <div class="text-muted-foreground/80 text-xs">
                 {#if showLab}
                   {#if lab && g.lab}
-                    <a href={href.lab(g.lab)} class="hover:text-foreground hover:underline" onclick={(e) => e.stopPropagation()}>{lab.name}</a>
+                    <a href={href.lab(g.lab)} class="hover:text-foreground hover:underline" onclick={(e) => peek(e, { kind: "lab", id: g.lab! })}>{lab.name}</a>
                   {:else}
                     <span title="No lab claims this model yet">Unattributed</span>
                   {/if}
@@ -179,7 +175,7 @@
             <span class="flex -space-x-1">
               {#each [...new Set(g.offers.map((o) => o.provider))] as p (p)}
                 {@const f = catalog.providers[p]?.facts}
-                <a href={href.provider(p)} onclick={(e) => e.stopPropagation()}>
+                <a href={href.provider(p)} onclick={(e) => peek(e, { kind: "provider", id: p })}>
                   <Logo name={f?.name ?? p} logo={f?.logo} color={f?.color} size={22} class="ring-background ring-2" />
                 </a>
               {/each}
@@ -196,13 +192,11 @@
           {#if stats.output !== undefined}{price(stats.output)}{:else}<span class="text-muted-foreground">–</span>{/if}
         </Table.Cell>
         <Table.Cell class="px-3">
-          {#if g.scores?.[bench.value]}
-            <BenchmarkBar benchmark={bench.value} score={g.scores[bench.value]!} range={ranges[bench.value]} />
-          {:else if g.mode === "chat"}<span class="text-muted-foreground">–</span>{/if}
+          <BenchmarkCell group={g} benchmark={bench.value} />
         </Table.Cell>
         <Table.Cell class="px-3 text-right font-mono text-[13px] tabular-nums">{tokens(stats.context)}</Table.Cell>
         <Table.Cell class="px-3">
-          <div class="text-muted-foreground/70 flex gap-2">
+          <div class="text-muted-foreground/70 flex gap-1.5">
             {#each FEATURES as [key, label, Icon] (key)}
               {#if g[key]}<span title={label}><Icon class="size-3.5" /></span>{/if}
             {/each}
@@ -216,54 +210,29 @@
       </Table.Row>
 
       {#if isOpen}
-        {@const scored = BENCHMARKS.filter((b) => g.scores?.[b])}
-        {#if scored.length}
-          {@const sources = [...new Set(scored.map((b) => g.scores![b]!.source))]}
-          <Table.Row class="bg-muted/30 hover:bg-muted/30">
-            <Table.Cell colspan={COLUMNS.length + 1} class="px-3 py-2 whitespace-normal">
-              <div class="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-xs {showLab ? 'pl-10' : ''}">
-                {#each scored as b (b)}
-                  {@const s = g.scores![b]!}
-                  {@const fmt = BENCHMARK_INFO[b].format}
-                  <span title={describeScore(b, s)}>
-                    <span class="text-muted-foreground">{BENCHMARK_INFO[b].label}</span>
-                    <span class="font-mono text-[13px] tabular-nums {s.stale_since ? 'text-warn' : ''}">{fmt(s.value)}</span>
-                    {#if s.ci}<span class="text-muted-foreground font-mono tabular-nums">({fmt(s.ci[0])}–{fmt(s.ci[1])})</span>{/if}
-                  </span>
-                {/each}
-                <span class="text-muted-foreground">
-                  From
-                  {#each sources as src, i (src)}{i ? " and " : ""}<a class="underline" href={SOURCES[src].url} target="_blank" rel="noreferrer">{SOURCES[src].name}</a>{/each},
-                  for the lab's model: hosts may serve quantized weights.
-                </span>
-              </div>
-            </Table.Cell>
-          </Table.Row>
-        {/if}
         {#each g.offers as o (o.id)}
           {@const f = catalog.providers[o.provider]?.facts}
           {@const s = app.scores[o.provider]}
           <Table.Row class="bg-muted/30 hover:bg-muted/40 {o.deprecated ? 'opacity-55' : ''}">
-            <Table.Cell class="px-3 py-2.5">
+            <Table.Cell colspan={2} class="px-3 py-2.5 whitespace-normal">
               <div class="flex items-center gap-2.5 {showLab ? 'pl-10' : ''}">
-                <a href={href.provider(o.provider)} title="{f?.name ?? o.provider} fact sheet">
+                <a href={href.provider(o.provider)} title="{f?.name ?? o.provider} fact sheet" onclick={(e) => peek(e, { kind: "provider", id: o.provider })}>
                   <Logo name={f?.name ?? o.provider} logo={f?.logo} color={f?.color} size={20} />
                 </a>
                 <div class="min-w-0">
-                  <a href={href.provider(o.provider)} class="text-sm hover:underline">{f?.name ?? o.provider}</a>
+                  <div class="flex flex-wrap items-center gap-1">
+                    <a href={href.provider(o.provider)} class="mr-0.5 text-sm hover:underline" onclick={(e) => peek(e, { kind: "provider", id: o.provider })}>{f?.name ?? o.provider}</a>
+                    {#if o.deprecated}<Badge variant="destructive">deprecated</Badge>
+                    {:else if o.deprecation}<Badge variant="outline" class="text-warn" title="Deprecation date">until {date(o.deprecation)}</Badge>{/if}
+                    {#if !o.billable}<Badge variant="outline" title="No source prices it, so it's not in pricing.json">unpriced</Badge>{/if}
+                    {#if o.staleSince}<Badge variant="outline" class="text-warn" title="Prices reused from an earlier build">stale prices</Badge>{/if}
+                  </div>
                   <div class="text-muted-foreground flex items-center gap-0.5 font-mono text-xs">
-                    {o.bifrostId}
+                    <!-- Long ids wrap at / and -, so expanding a row never widens the table. -->
+                    <span>{#each breakable(o.bifrostId) as part, i (i)}{part}<wbr />{/each}</span>
                     <CopyButton text={o.bifrostId} label="Copy Bifrost model id" />
                   </div>
                 </div>
-              </div>
-            </Table.Cell>
-            <Table.Cell class="px-3">
-              <div class="flex flex-wrap gap-1">
-                {#if o.deprecated}<Badge variant="destructive">deprecated</Badge>
-                {:else if o.deprecation}<Badge variant="outline" class="text-warn" title="Deprecation date">until {date(o.deprecation)}</Badge>{/if}
-                {#if !o.billable}<Badge variant="outline" title="No source prices it, so it's not in pricing.json">unpriced</Badge>{/if}
-                {#if o.staleSince}<Badge variant="outline" class="text-warn" title="Prices reused from an earlier build">stale prices</Badge>{/if}
               </div>
             </Table.Cell>
             <Table.Cell class="px-3 text-right font-mono text-[13px] tabular-nums">
@@ -281,21 +250,14 @@
               {#if o.maxOutput}<div class="text-muted-foreground text-xs">{tokens(o.maxOutput)} <span class="font-sans">out</span></div>{/if}
             </Table.Cell>
             <Table.Cell class="px-3">
-              <button class="text-muted-foreground hover:text-foreground text-xs underline-offset-2 hover:underline" onclick={() => (sources = sources === o.id ? null : o.id)}>
-                {sources === o.id ? "Hide details" : "Details"}
-              </button>
+              <a href={href.model(g.key)} class="text-muted-foreground hover:text-foreground text-xs underline-offset-2 hover:underline" onclick={(e) => peek(e, { kind: "model", id: g.key })}>
+                Details
+              </a>
             </Table.Cell>
             <Table.Cell class="px-3 text-center"><ScoreBadge score={s?.privacy} label="Privacy" /></Table.Cell>
             <Table.Cell class="px-3 text-center"><ScoreBadge score={s?.eco} label="Eco" /></Table.Cell>
             <Table.Cell></Table.Cell>
           </Table.Row>
-          {#if sources === o.id}
-            <Table.Row class="bg-muted/30 hover:bg-muted/30">
-              <Table.Cell colspan={COLUMNS.length + 1} class="whitespace-normal">
-                <OfferSources offer={o} />
-              </Table.Cell>
-            </Table.Row>
-          {/if}
         {/each}
       {/if}
     {:else}

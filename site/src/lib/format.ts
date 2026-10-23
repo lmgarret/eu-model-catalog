@@ -80,3 +80,8 @@ export const MODE_LABEL: Record<string, string> = {
   audio_speech: "Speech",
   image_generation: "Image",
 };
+
+/** An id split after each `/` and `-`, so it can wrap there and not mid-word: render a <wbr> after each part. */
+export function breakable(id: string): string[] {
+  return id.split(/(?<=[/-])/);
+}

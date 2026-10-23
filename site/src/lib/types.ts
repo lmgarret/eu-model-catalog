@@ -1,4 +1,4 @@
-export type { Benchmark, Score as BenchmarkScore, Scores } from "../../../src/benchmarks.js";
+export type { Benchmark, Fields, Score as BenchmarkScore, Scores } from "../../../src/benchmarks.js";
 export type { Catalog, CatalogInfo, CatalogModel, CatalogPrice } from "../../../src/catalog.js";
 export type { ProviderFacts, SetupStep } from "../../../src/facts.js";
 export type { Currency, Mode, Unit } from "../../../src/model.js";

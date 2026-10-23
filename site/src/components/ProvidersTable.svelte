@@ -5,7 +5,7 @@
   import { maxPrivacy } from "$lib/facts.js";
   import { countryName, flag } from "$lib/format.js";
   import { compareBy } from "$lib/models.js";
-  import { app, href } from "$lib/state.svelte.js";
+  import { app, href, peek } from "$lib/state.svelte.js";
   import Logo from "./Logo.svelte";
   import ScoreBadge from "./ScoreBadge.svelte";
 
@@ -70,9 +70,9 @@
       {@const training = r.max?.privacy.training?.value}
       {@const retention = r.max?.privacy.retention?.value.days}
       {@const regions = r.max?.jurisdiction.regions?.value}
-      <Table.Row class="cursor-pointer" onclick={() => (location.hash = href.provider(r.id))}>
+      <Table.Row class="cursor-pointer" onclick={(e) => peek(e, { kind: "provider", id: r.id })}>
         <Table.Cell class="px-3 py-3.5">
-          <a href={href.provider(r.id)} class="flex items-center gap-3">
+          <a href={href.provider(r.id)} class="flex items-center gap-3" onclick={(e) => peek(e, { kind: "provider", id: r.id })}>
             <Logo name={r.facts?.name ?? r.id} logo={r.facts?.logo} color={r.facts?.color} size={30} />
             <span>
               <span class="block font-medium">{r.facts?.name ?? r.id}</span>

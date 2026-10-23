@@ -1,0 +1,30 @@
+# Reference models for the benchmark charts on model pages, shown next to the catalog's own models.
+# Every build takes the latest version of each family below from the sources' model names, so a new
+# release replaces the previous one without editing this file. The best open-weight model is added
+# on its own. Models a European provider hosts are already in the catalog; list a family here to
+# compare against models that aren't.
+#
+# match: a regex on the model's name at Epoch AI and LMArena. Its `v` group is the version; the
+#   highest wins (5.10 > 5.9), and among that version's variants (effort levels…) the best score.
+
+families:
+  - name: Claude Opus
+    match: '^Claude Opus (?<v>\d+(?:\.\d+)*)\b'
+  - name: Claude Sonnet
+    match: '^Claude Sonnet (?<v>\d+(?:\.\d+)*)\b'
+  - name: Claude Haiku
+    match: '^Claude Haiku (?<v>\d+(?:\.\d+)*)\b'
+  - name: Claude Fable
+    match: '^Claude Fable (?<v>\d+(?:\.\d+)*)\b'
+  - name: GPT Astra
+    match: '^GPT-(?<v>\d+(?:\.\d+)*) Astra\b'
+  - name: GPT Sol
+    match: '^GPT-(?<v>\d+(?:\.\d+)*) Sol\b'
+  - name: GPT Terra
+    match: '^GPT-(?<v>\d+(?:\.\d+)*) Terra\b'
+  - name: GPT Luna
+    match: '^GPT-(?<v>\d+(?:\.\d+)*) Luna\b'
+  - name: Gemini Argon
+    match: '^Gemini (?<v>\d+(?:\.\d+)*) Argon\b'
+  - name: Gemini Flash
+    match: '^Gemini (?<v>\d+(?:\.\d+)*) Flash\b(?!-Lite)'

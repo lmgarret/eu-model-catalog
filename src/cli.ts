@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { type BenchmarkFetch, type SourceScores, matchBenchmarks } from "./benchmarks.js";
+import { type BenchmarkFetch, type SourceData, benchmarkFields, loadFamilies, matchBenchmarks } from "./benchmarks.js";
 import { buildOutputs } from "./build.js";
 import { collectSources, fetchPreviousCatalog } from "./collect.js";
 import { loadOverlay, loadProviders } from "./config.js";
@@ -18,9 +18,9 @@ import { Warnings, toAnnotation } from "./warnings.js";
 
 const PAGES_URL = "https://lmgarret.github.io/eu-model-catalog";
 
-function benchmarkFetch(run: () => Promise<SourceScores>, fetchedAt: string): Promise<BenchmarkFetch> {
+function benchmarkFetch(run: () => Promise<SourceData>, fetchedAt: string): Promise<BenchmarkFetch> {
   return run().then(
-    (scores) => ({ ok: true, scores, fetched_at: fetchedAt }),
+    (data) => ({ ok: true, ...data, fetched_at: fetchedAt }),
     (err: unknown) => ({ ok: false, error: err instanceof Error ? err.message : String(err) }),
   );
 }
@@ -41,6 +41,7 @@ async function main(): Promise<void> {
   const overlay = await loadOverlay(path.join(root, "overlay"), Object.keys(providers));
   const facts = await loadProviderFacts(path.join(root, "providers"), Object.keys(providers));
   const labs = await loadLabs(path.join(root, "labs"));
+  const families = await loadFamilies(path.join(root, "benchmarks.yaml"));
   const hfRepos = Object.values(labs).flatMap((l) => Object.values(l.models).flatMap((m) => (m.hf ? [m.hf] : [])));
 
   const previous = await fetchPreviousCatalog(values.previous);
@@ -71,10 +72,11 @@ async function main(): Promise<void> {
     });
   }
 
-  const benchmarks = matchBenchmarks(labs, { epoch, lmarena }, previous.catalog, warnings);
+  const scores = matchBenchmarks(labs, { epoch, lmarena }, previous.catalog, warnings);
+  const benchmarks = benchmarkFields({ epoch, lmarena }, previous.catalog, families);
 
   const { pricing, catalog } = buildOutputs(
-    { builtAt, providers, overlay, facts, labs, hfLicenses: hf.licenses, benchmarks, datasheet, rates, sources },
+    { builtAt, providers, overlay, facts, labs, hfLicenses: hf.licenses, scores, benchmarks, datasheet, rates, sources },
     warnings,
   );
 

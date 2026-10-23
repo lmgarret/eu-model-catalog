@@ -12,6 +12,6 @@ Trimmed to a few models per source.
 | `infomaniak.handwritten.json` | **Hand-written** from Infomaniak's OpenAPI spec. Replace with a captured response. |
 | `mistral.handwritten.json` | **Hand-written** from Mistral's API docs. Replace with a captured response. |
 | `epoch-eci.csv` | Recorded from https://epoch.ai/data/eci_scores.csv on 2026-10-23 |
-| `epoch-benchmarks.csv` | Recorded from https://epoch.ai/data/eci_benchmarks.csv on 2026-10-23; the last row (`_low`) is **hand-written** |
+| `epoch-benchmarks.csv` | Recorded from https://epoch.ai/data/eci_benchmarks.csv on 2026-10-23; FrontierMath rows for Mistral Large 4 (the `_low` one is **hand-written**) and one OTIS row, which the parser ignores |
 | `lmarena.json` | Rows of LMArena's `text_style_control/latest` parquet, recorded on 2026-10-23 |
 | `overlay/` | Overlay used by the snapshot test |
