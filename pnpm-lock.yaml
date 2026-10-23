@@ -8,18 +8,12 @@ importers:
 
   .:
     dependencies:
-      d3-scale:
-        specifier: ^4.0.2
-        version: 4.0.2
       decimal.js:
         specifier: ^10.6.0
         version: 10.6.0
       hyparquet:
         specifier: ^1.31.5
         version: 1.31.5
-      layerchart:
-        specifier: ^2.9.0
-        version: 2.9.0(svelte@5.57.2(@typescript-eslint/types@8.72.0))(zod@4.6.7)
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
@@ -63,9 +57,15 @@ importers:
       cn:
         specifier: ^0.5.0
         version: 0.5.0
+      d3-scale:
+        specifier: ^4.0.2
+        version: 4.0.2
       eslint:
         specifier: ^10.13.0
         version: 10.13.0(jiti@2.7.0)
+      layerchart:
+        specifier: ^2.9.0
+        version: 2.9.0(svelte@5.57.2(@typescript-eslint/types@8.72.0))(zod@4.6.7)
       svelte:
         specifier: ^5.57.2
         version: 5.57.2(@typescript-eslint/types@8.72.0)
