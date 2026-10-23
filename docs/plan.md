@@ -171,6 +171,9 @@ Svelte 5 with plain Vite (one page, so no SvelteKit), relative base path. It fet
    - latency measured from our own Bifrost logs
    - an LLM job that reads pricing pages for providers without a price API and opens PRs against the overlay
    - an optional LiteLLM-format output
+5. **Next: benchmarks and comparison on the site.**
+   - ~~Model page dot strips~~ and ~~three benchmark sliders~~ *Done* in the site redesign (`BenchmarkField`, `minScores`).
+   - **Selecting and comparing models:** agreed, not started. See `docs/superpowers/specs/2026-10-23-model-compare-design.md`.
 
 ## Open questions to resolve during phase 1
 
